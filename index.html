@@ -4,1607 +4,2275 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Trigo:nometry</title>
+<script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ═══════════════ RESET & TOKENS ═══════════════ */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
---bg0:#02040A;--bg1:#060B16;--bg2:#0A1224;
---panel:rgba(10,20,42,0.78);
---blue:#3B82F6;--cyan:#06B6D4;--sky:#0EA5E9;
---indigo:#6366F1;--cobalt:#2563EB;--ice:#BAE6FD;
---bdr:rgba(56,189,248,0.16);--glow:rgba(6,182,212,0.28);
---tx:#E2E8F0;--tx2:#94A3B8;--tx3:#64748B;
---red:#EF4444;--green:#22C55E;--amber:#F59E0B;--purple:#A855F7;
---sans:'Inter',system-ui,sans-serif;
---mono:'JetBrains Mono',monospace;
+  --bg0:#02040A; --bg1:#060B16; --bg2:#0A1224;
+  --panel:rgba(10,20,42,0.80);
+  --blue:#3B82F6; --cyan:#06B6D4; --sky:#0EA5E9;
+  --indigo:#6366F1; --cobalt:#2563EB; --ice:#BAE6FD;
+  --bdr:rgba(56,189,248,0.16); --glow:rgba(6,182,212,0.28);
+  --tx:#D6EEFF; --tx2:#88BFEA; --tx3:#4A7FA8;
+  --red:#FF6B7A; --green:#34D88B; --amber:#FFBC42; --purple:#B48EFF;
+  --sans:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
 }
 html{scroll-behavior:smooth}
-body{font-family:var(--sans);color:var(--tx);background:var(--bg0);min-height:100vh;overflow-x:hidden;line-height:1.6}
-::-webkit-scrollbar{width:6px}
+body{font-family:var(--sans);color:var(--tx);background:var(--bg0);min-height:100vh;overflow-x:hidden;
+  background-image:radial-gradient(ellipse at 15% 0%,rgba(30,70,140,0.3) 0%,transparent 55%),
+                   radial-gradient(ellipse at 85% 100%,rgba(10,40,100,0.2) 0%,transparent 55%)}
+::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--bg0)}
-::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.25);border-radius:3px}
-::selection{background:rgba(59,130,246,0.35);color:#fff}
+::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.3);border-radius:3px}
+::selection{background:rgba(59,130,246,0.4);color:#fff}
 
-/* ── Math Symbols Background ── */
+/* ═══════════════ MATH SYMBOL BG ═══════════════ */
 #math-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.math-sym{position:absolute;font-family:var(--mono);color:var(--ice);user-select:none;pointer-events:none}
+.ms{position:absolute;font-family:var(--mono);color:var(--ice);pointer-events:none;user-select:none}
 
-/* ── Header ── */
-#app-header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:rgba(2,4,10,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--bdr)}
-.logo{font-size:1.6rem;font-weight:700;letter-spacing:-0.5px;color:var(--tx)}
-.colon-glow{animation:colonPulse 2s ease-in-out infinite;font-weight:700}
-@keyframes colonPulse{0%,100%{color:#06B6D4;text-shadow:0 0 8px #06B6D4}50%{color:#0EA5E9;text-shadow:0 0 16px #0EA5E9,0 0 32px rgba(6,182,212,0.4)}}
-.arch-badge{font-family:var(--mono);font-size:0.78rem;padding:6px 14px;border-radius:6px;background:var(--bg2);border:1px solid var(--bdr);color:var(--cyan);letter-spacing:0.3px}
+/* ═══════════════ HEADER ═══════════════ */
+#hdr{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
+  padding:11px 24px;background:rgba(2,4,10,0.92);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--bdr);box-shadow:0 1px 20px rgba(0,0,0,0.5)}
+.logo{font-size:1.55rem;font-weight:700;letter-spacing:-0.5px;color:var(--ice);cursor:pointer}
+.colon{animation:cpulse 2.2s ease-in-out infinite}
+@keyframes cpulse{
+  0%,100%{color:#06B6D4;text-shadow:0 0 10px #06B6D4,0 0 20px rgba(6,182,212,0.4)}
+  50%{color:#38D9F5;text-shadow:0 0 18px #38D9F5,0 0 36px rgba(56,217,245,0.5)}}
+.badge{font-family:var(--mono);font-size:0.76rem;padding:5px 13px;border-radius:6px;
+  background:rgba(15,35,70,0.8);border:1px solid rgba(56,189,248,0.25);color:var(--cyan);letter-spacing:0.3px}
 
-/* ── Navigation ── */
-#main-nav{position:sticky;top:53px;z-index:99;background:rgba(6,11,22,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);padding:8px 16px;overflow-x:auto;white-space:nowrap;-ms-overflow-style:none;scrollbar-width:none}
-#main-nav::-webkit-scrollbar{display:none}
-.nav-inner{display:flex;gap:6px;min-width:max-content}
-.nav-pill{font-family:var(--sans);font-size:0.78rem;padding:6px 14px;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--tx3);cursor:pointer;transition:all .2s;white-space:nowrap;font-weight:500}
-.nav-pill:hover{color:var(--tx2);border-color:var(--bdr);transform:translateY(-1px)}
-.nav-pill.active{background:rgba(59,130,246,0.15);color:var(--blue);border-color:rgba(59,130,246,0.3)}
+/* ═══════════════ NAV ═══════════════ */
+#nav{position:sticky;top:52px;z-index:199;background:rgba(6,11,22,0.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--bdr);padding:7px 14px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+#nav::-webkit-scrollbar{display:none}
+#nav-inner{display:flex;gap:5px;min-width:max-content}
+.np{font-family:var(--sans);font-size:0.76rem;padding:5px 12px;border-radius:5px;border:1px solid transparent;
+  background:transparent;color:var(--tx3);cursor:pointer;transition:all .18s;font-weight:500;white-space:nowrap}
+.np:hover{color:var(--tx2);border-color:var(--bdr);background:rgba(20,50,100,0.35);transform:translateY(-1px)}
+.np.act{background:rgba(59,130,246,0.16);color:var(--blue);border-color:rgba(59,130,246,0.35)}
 
-/* ── Module Views ── */
-.module-view{display:none;padding:24px 16px;position:relative;z-index:1;min-height:calc(100vh - 110px)}
-.module-view.active{display:block}
-.module-inner{max-width:1400px;margin:0 auto}
-.module-title{margin-bottom:20px}
-.module-title h2{font-size:1.35rem;font-weight:600;color:var(--tx);margin-bottom:4px}
-.module-title p{font-size:0.85rem;color:var(--tx3)}
-.module-body{display:flex;gap:20px;flex-wrap:wrap}
+/* ═══════════════ VIEWS ═══════════════ */
+.view{display:none;padding:20px 14px;position:relative;z-index:1;min-height:calc(100vh - 100px)}
+.view.act{display:block}
+.vi{max-width:1380px;margin:0 auto}
+.vt{margin-bottom:18px}
+.vt h2{font-size:1.3rem;font-weight:600;color:var(--ice);margin-bottom:3px}
+.vt p{font-size:0.83rem;color:var(--tx3)}
+.mb{display:flex;gap:18px;flex-wrap:wrap}
 
-/* ── Canvas ── */
-.canvas-wrap{flex:1 1 480px;position:relative;background:var(--bg1);border-radius:10px;border:1px solid var(--bdr);overflow:hidden;min-height:420px}
-.canvas-wrap canvas{display:block;width:100%;height:100%}
-.canvas-wrap.short{min-height:320px}
+/* ═══════════════ CANVAS WRAP ═══════════════ */
+.cw{flex:1 1 420px;position:relative;background:linear-gradient(150deg,var(--bg1) 0%,#0A1628 100%);
+  border-radius:12px;border:1px solid rgba(56,189,248,0.15);overflow:hidden;min-height:420px;
+  box-shadow:0 4px 30px rgba(0,20,60,0.5),inset 0 1px 0 rgba(126,200,248,0.07);touch-action:none}
+.cw canvas{display:block;width:100%;height:100%}
+.cw.tall{min-height:500px}
 
-/* ── Controls Panel ── */
-.controls-panel{flex:0 0 310px;min-width:260px;background:var(--panel);backdrop-filter:blur(12px);border-radius:10px;border:1px solid var(--bdr);padding:16px;display:flex;flex-direction:column;gap:14px;align-self:flex-start;max-height:calc(100vh - 140px);overflow-y:auto}
-.ctrl-group{display:flex;flex-direction:column;gap:6px}
-.ctrl-group>label{font-size:0.78rem;color:var(--tx2);font-weight:500;display:flex;justify-content:space-between;align-items:center}
-.ctrl-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.ctrl-sep{height:1px;background:var(--bdr);margin:4px 0}
+/* ═══════════════ CONTROL PANEL ═══════════════ */
+.cp{flex:0 0 298px;min-width:252px;background:rgba(10,20,42,0.82);backdrop-filter:blur(14px);
+  border-radius:12px;border:1px solid rgba(56,189,248,0.15);padding:15px;display:flex;
+  flex-direction:column;gap:12px;align-self:flex-start;max-height:calc(100vh - 120px);overflow-y:auto;
+  box-shadow:0 4px 22px rgba(0,20,60,0.4)}
+.cg{display:flex;flex-direction:column;gap:5px}
+.cg>label,.cl{font-size:0.76rem;color:var(--tx2);font-weight:500;display:flex;justify-content:space-between;align-items:center}
+.cr{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.sep{height:1px;background:rgba(56,189,248,0.12);margin:2px 0}
 
-/* ── Sliders ── */
-.styled-slider{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--bg2);border-radius:2px;outline:none;cursor:pointer}
-.styled-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--cyan);cursor:pointer;border:2px solid var(--bg0);transition:transform .15s,box-shadow .15s}
-.styled-slider::-webkit-slider-thumb:hover{transform:scale(1.25);box-shadow:0 0 10px var(--glow)}
-.styled-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--cyan);cursor:pointer;border:2px solid var(--bg0)}
+/* ═══════════════ SLIDER ═══════════════ */
+.sl{-webkit-appearance:none;appearance:none;width:100%;height:4px;
+  background:rgba(20,45,90,0.9);border-radius:2px;outline:none;cursor:pointer}
+.sl::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+  background:linear-gradient(135deg,var(--sky),var(--cyan));cursor:pointer;
+  border:2px solid var(--bg0);transition:transform .14s,box-shadow .14s}
+.sl::-webkit-slider-thumb:hover{transform:scale(1.3);box-shadow:0 0 12px rgba(56,217,245,0.55)}
+.sl::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--cyan);
+  cursor:pointer;border:2px solid var(--bg0)}
 
-/* ── Pills ── */
-.pill-group{display:flex;gap:4px;flex-wrap:wrap}
-.pill{font-family:var(--sans);font-size:0.72rem;padding:4px 10px;border-radius:5px;border:1px solid var(--bdr);background:var(--bg2);color:var(--tx3);cursor:pointer;transition:all .2s;font-weight:500;white-space:nowrap}
-.pill:hover{color:var(--sky);border-color:var(--sky);transform:translateY(-2px);box-shadow:0 4px 14px var(--glow)}
-.pill.active{background:rgba(59,130,246,0.18);color:var(--blue);border-color:rgba(59,130,246,0.4)}
+/* ═══════════════ PILL GROUP ═══════════════ */
+.pg{display:flex;gap:4px;flex-wrap:wrap}
+.pl{font-family:var(--sans);font-size:0.7rem;padding:4px 9px;border-radius:4px;
+  border:1px solid rgba(56,189,248,0.18);background:rgba(15,35,70,0.6);color:var(--tx3);
+  cursor:pointer;transition:all .18s;font-weight:500;white-space:nowrap}
+.pl:hover{color:var(--sky);border-color:var(--sky);transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(6,182,212,0.25);background:rgba(25,60,120,0.5)}
+.pl.act{background:rgba(59,130,246,0.2);color:var(--blue);border-color:rgba(59,130,246,0.45)}
 
-/* ── Badges ── */
-.badge-row{display:flex;gap:8px;flex-wrap:wrap}
-.badge{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:6px;background:var(--bg2);border:1px solid var(--bdr);min-width:60px;transition:all .2s}
-.badge:hover{border-color:var(--sky);transform:translateY(-2px);box-shadow:0 4px 14px var(--glow)}
-.badge-label{font-size:0.65rem;color:var(--tx3);text-transform:uppercase;font-weight:600;letter-spacing:0.5px}
-.badge-value{font-family:var(--mono);font-size:0.82rem;font-variant-numeric:tabular-nums;color:var(--cyan)}
+/* ═══════════════ BADGE / METRIC ═══════════════ */
+.br{display:flex;gap:7px;flex-wrap:wrap}
+.bx{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:6px 9px;
+  border-radius:7px;background:rgba(15,35,70,0.75);border:1px solid rgba(56,189,248,0.18);
+  min-width:58px;transition:all .18s;box-shadow:inset 0 1px 0 rgba(126,200,248,0.06)}
+.bx:hover{border-color:var(--sky);transform:translateY(-2px);box-shadow:0 4px 12px rgba(6,182,212,0.22)}
+.bl{font-size:0.62rem;color:var(--tx3);text-transform:uppercase;font-weight:600;letter-spacing:0.5px}
+.bv{font-family:var(--mono);font-size:0.8rem;font-variant-numeric:tabular-nums;color:var(--cyan)}
 
-/* ── Ratio Chips ── */
-.ratio-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:5px;background:var(--bg2);border:1px solid var(--bdr);font-family:var(--mono);font-size:0.75rem;font-variant-numeric:tabular-nums;cursor:pointer;transition:all .2s;color:var(--tx2)}
-.ratio-chip:hover{border-color:var(--sky);transform:translateY(-2px);box-shadow:0 4px 14px var(--glow);color:var(--cyan)}
-.ratio-chip .rc-name{color:var(--tx3);font-size:0.65rem;font-weight:600;text-transform:lowercase}
-.ratio-chip .rc-val{color:var(--ice)}
-.ratio-chip.highlight{border-color:var(--amber);background:rgba(245,158,11,0.1);box-shadow:0 0 12px rgba(245,158,11,0.2)}
+/* ═══════════════ BUTTONS ═══════════════ */
+.btn{font-family:var(--sans);font-size:0.76rem;padding:6px 13px;border-radius:6px;
+  border:1px solid rgba(56,189,248,0.22);background:rgba(15,35,70,0.6);color:var(--tx2);
+  cursor:pointer;transition:all .18s;font-weight:500}
+.btn:hover{border-color:var(--sky);color:var(--sky);transform:translateY(-1px);
+  box-shadow:0 3px 10px rgba(6,182,212,0.22)}
+.btn.act{background:rgba(59,130,246,0.18);color:var(--blue);border-color:rgba(59,130,246,0.4)}
 
-/* ── Buttons ── */
-.btn{font-family:var(--sans);font-size:0.78rem;padding:6px 14px;border-radius:6px;border:1px solid var(--bdr);background:var(--bg2);color:var(--tx2);cursor:pointer;transition:all .2s;font-weight:500}
-.btn:hover{border-color:var(--sky);color:var(--sky);transform:translateY(-1px);box-shadow:0 3px 10px var(--glow)}
-.btn.active{background:rgba(59,130,246,0.15);color:var(--blue);border-color:rgba(59,130,246,0.3)}
+/* Rainbow button */
+.rb{position:relative;font-family:var(--sans);font-size:0.8rem;padding:7px 16px;border-radius:7px;
+  border:none;background:rgba(10,20,42,0.95);color:var(--ice);cursor:pointer;font-weight:600;
+  z-index:1;transition:transform .14s}
+.rb::before{content:'';position:absolute;inset:-2px;border-radius:9px;z-index:-2;
+  background:linear-gradient(90deg,#ff0055,#ff7700,#ffee00,#00ff88,#00ccff,#7700ff)}
+.rb::after{content:'';position:absolute;inset:0;border-radius:7px;background:rgba(10,20,42,0.95);z-index:-1}
+.rb:hover{transform:translateY(-2px)}
+.rb:active::before{animation:rbf .5s linear infinite;background-size:200%;inset:-4px;filter:blur(3px);
+  background:linear-gradient(90deg,#ff0055,#ff7700,#ffee00,#00ff88,#00ccff,#7700ff,#ff0055,#ff7700)}
+.rb:active{box-shadow:0 0 22px rgba(255,0,85,0.3),0 0 44px rgba(0,204,255,0.2);transform:translateY(-1px)}
+@keyframes rbf{0%{background-position:0}100%{background-position:200%}}
 
-/* ── Rainbow Buttons ── */
-.rainbow-btn{position:relative;font-family:var(--sans);font-size:0.82rem;padding:8px 18px;border-radius:8px;border:none;background:var(--bg2);color:var(--tx);cursor:pointer;font-weight:600;z-index:1;transition:transform .15s}
-.rainbow-btn::before{content:'';position:absolute;inset:-2px;border-radius:10px;background:linear-gradient(90deg,#ff0055,#ff7700,#ffee00,#00ff88,#00ccff,#7700ff);z-index:-2;transition:inset .2s,filter .2s}
-.rainbow-btn::after{content:'';position:absolute;inset:0;border-radius:8px;background:var(--bg2);z-index:-1}
-.rainbow-btn:hover{transform:translateY(-2px)}
-.rainbow-btn:active::before{background:linear-gradient(90deg,#ff0055,#ff7700,#ffee00,#00ff88,#00ccff,#7700ff,#ff0055,#ff7700,#ffee00,#00ff88,#00ccff,#7700ff);background-size:200% 100%;animation:rainbowFlow .6s linear infinite;inset:-4px;filter:blur(4px)}
-.rainbow-btn:active{box-shadow:0 0 25px rgba(255,0,85,0.35),0 0 50px rgba(0,204,255,0.25);transform:translateY(-1px)}
-@keyframes rainbowFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+/* ═══════════════ MISC UI ═══════════════ */
+.ro{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--cyan)}
+.eb{padding:11px;border-radius:7px;background:rgba(15,35,70,0.75);border:1px solid rgba(56,189,248,0.18);
+  font-family:var(--mono);font-size:0.81rem;color:var(--ice);text-align:center;line-height:1.8;white-space:pre-line}
+.tl{display:flex;align-items:center;gap:6px;font-size:0.73rem;color:var(--tx2);cursor:pointer;padding:2px 0}
+.tl input[type=checkbox]{accent-color:var(--cyan);width:13px;height:13px;cursor:pointer}
+.vt-tbl{width:100%;border-collapse:collapse;font-size:0.77rem}
+.vt-tbl th,.vt-tbl td{padding:6px 8px;border:1px solid rgba(56,189,248,0.14);text-align:center;font-variant-numeric:tabular-nums}
+.vt-tbl th{background:rgba(15,40,80,0.8);color:var(--tx2);font-weight:600;font-size:0.7rem;text-transform:uppercase}
+.vt-tbl td{color:var(--ice);font-family:var(--mono);transition:background .15s}
+.vt-tbl td:hover,.vt-tbl tr:hover td{background:rgba(56,217,245,0.08);color:var(--cyan)}
+.sp{display:none}.sp.act{display:block}
 
-/* ── Readout ── */
-.readout{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--cyan)}
+/* ═══════════════ HOMEPAGE ═══════════════ */
+.hero{text-align:center;padding:52px 16px 36px}
+.hero h1{font-size:2.7rem;font-weight:700;letter-spacing:-1px;margin-bottom:8px;
+  background:linear-gradient(135deg,var(--ice) 0%,var(--sky) 40%,var(--blue) 75%,var(--indigo) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-s{font-size:1.05rem;color:var(--sky);margin-bottom:14px}
+.hero-d{max-width:660px;margin:0 auto 28px;color:var(--tx2);font-size:0.9rem;line-height:1.72}
+.sr{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:44px}
+.sb{padding:7px 15px;border-radius:7px;background:rgba(59,130,246,0.1);
+  border:1px solid rgba(59,130,246,0.22);font-size:0.76rem;font-weight:600;color:var(--blue);transition:all .18s}
+.sb:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(6,182,212,0.22);
+  border-color:var(--sky);color:var(--sky);background:rgba(59,130,246,0.15)}
+.mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:13px;
+  max-width:1080px;margin:0 auto;padding:0 14px 36px}
+.mc{padding:18px;border-radius:11px;background:linear-gradient(150deg,var(--bg1),rgba(8,22,50,0.9));
+  border:1px solid rgba(56,189,248,0.16);cursor:pointer;transition:all .22s;
+  box-shadow:0 2px 14px rgba(0,20,60,0.35)}
+.mc:hover{border-color:var(--sky);transform:translateY(-4px);
+  box-shadow:0 8px 26px rgba(56,217,245,0.16),0 0 0 1px rgba(74,158,255,0.12)}
+.mc-n{font-family:var(--mono);font-size:0.68rem;color:var(--cyan);margin-bottom:5px;font-weight:600;letter-spacing:1px}
+.mc h3{font-size:0.9rem;font-weight:600;margin-bottom:3px;color:var(--ice)}
+.mc p{font-size:0.76rem;color:var(--tx3);line-height:1.5}
 
-/* ── Fractions ── */
-.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-family:var(--mono);font-size:0.82em;line-height:1.15}
-.frac-n{border-bottom:1px solid var(--tx3);padding:0 3px 1px}
-.frac-d{padding:1px 3px 0}
+/* ═══════════════ ASTC & MISC BADGES ═══════════════ */
+.astc{display:inline-block;padding:4px 10px;border-radius:5px;font-family:var(--mono);font-size:0.74rem;font-weight:600;border:1px solid}
+.aq1{color:var(--green);border-color:rgba(52,216,139,0.35);background:rgba(52,216,139,0.1)}
+.aq2{color:var(--blue);border-color:rgba(59,130,246,0.35);background:rgba(59,130,246,0.1)}
+.aq3{color:var(--amber);border-color:rgba(255,188,66,0.35);background:rgba(255,188,66,0.1)}
+.aq4{color:var(--red);border-color:rgba(255,107,122,0.35);background:rgba(255,107,122,0.1)}
 
-/* ── Toggle / Checkbox ── */
-.toggle-label{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--tx2);cursor:pointer;padding:3px 0}
-.toggle-label input[type=checkbox]{accent-color:var(--cyan);width:14px;height:14px;cursor:pointer}
+/* Area Bar */
+.abw{display:flex;align-items:center;gap:7px;padding:7px;background:rgba(15,35,70,0.75);border-radius:6px;border:1px solid rgba(56,189,248,0.16)}
+.ab{flex:1;height:19px;border-radius:3px;overflow:hidden;display:flex;background:rgba(2,4,10,0.8)}
+.as{height:100%;transition:width .28s}
 
-/* ── Homepage ── */
-.hero{text-align:center;padding:60px 20px 40px}
-.hero h1{font-size:2.8rem;font-weight:700;letter-spacing:-1px;margin-bottom:8px}
-.hero-sub{font-size:1.1rem;color:var(--sky);font-weight:400;margin-bottom:16px}
-.hero-desc{max-width:680px;margin:0 auto 32px;color:var(--tx2);font-size:0.92rem;line-height:1.7}
-.stat-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:48px}
-.stat-badge{padding:8px 16px;border-radius:8px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);font-size:0.78rem;font-weight:600;color:var(--blue);transition:all .2s}
-.stat-badge:hover{transform:translateY(-2px);box-shadow:0 4px 14px var(--glow);border-color:var(--sky);color:var(--sky)}
-.mod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;max-width:1100px;margin:0 auto;padding:0 16px}
-.mod-card{padding:20px;border-radius:10px;background:var(--bg1);border:1px solid var(--bdr);cursor:pointer;transition:all .25s}
-.mod-card:hover{border-color:var(--sky);transform:translateY(-3px);box-shadow:0 8px 24px rgba(6,182,212,0.15)}
-.mod-card-num{font-family:var(--mono);font-size:0.7rem;color:var(--cyan);margin-bottom:6px;font-weight:600}
-.mod-card h3{font-size:0.92rem;font-weight:600;margin-bottom:4px;color:var(--tx)}
-.mod-card p{font-size:0.78rem;color:var(--tx3);line-height:1.5}
+/* ═══════════════ MODULE 11 · GROQ VISION CHATBOT UI ═══════════════ */
+.ai-shell{display:flex;flex-direction:column;height:calc(100vh - 185px);min-height:540px;max-height:760px;
+  background:linear-gradient(155deg,rgba(6,11,22,0.95),rgba(10,20,42,0.92));
+  border:1px solid rgba(56,189,248,0.22);border-radius:14px;overflow:hidden;
+  box-shadow:0 8px 36px rgba(0,15,50,0.65),inset 0 1px 0 rgba(186,230,253,0.08)}
+.ai-top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  padding:12px 16px;background:rgba(2,6,16,0.88);border-bottom:1px solid rgba(56,189,248,0.16)}
+.ai-top-grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ai-in{font-family:var(--mono);font-size:0.76rem;padding:6px 10px;border-radius:6px;
+  background:rgba(12,26,54,0.85);border:1px solid rgba(56,189,248,0.25);color:var(--ice);outline:none;transition:border .18s}
+.ai-in:focus{border-color:var(--cyan);box-shadow:0 0 10px rgba(6,182,212,0.25)}
+.ai-sel{font-family:var(--mono);font-size:0.74rem;padding:6px 10px;border-radius:6px;
+  background:rgba(12,26,54,0.9);border:1px solid rgba(56,189,248,0.25);color:var(--cyan);outline:none;cursor:pointer}
+.ai-status{font-family:var(--mono);font-size:0.68rem;padding:4px 9px;border-radius:99px;font-weight:600;
+  border:1px solid rgba(52,216,139,0.35);background:rgba(52,216,139,0.12);color:var(--green)}
+.ai-status.demo{border-color:rgba(255,188,66,0.35);background:rgba(255,188,66,0.12);color:var(--amber)}
+.ai-chips{display:flex;gap:6px;padding:9px 16px;background:rgba(6,13,28,0.75);
+  border-bottom:1px solid rgba(56,189,248,0.1);overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.ai-chips::-webkit-scrollbar{display:none}
+.ai-log{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.ai-msg{display:flex;gap:11px;max-width:86%;animation:fadeUp .2s ease-out}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ai-msg.usr{align-self:flex-end;flex-direction:row-reverse}
+.ai-av{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:0.75rem;font-weight:700;flex-shrink:0;
+  background:rgba(6,182,212,0.18);border:1px solid rgba(6,182,212,0.4);color:var(--cyan)}
+.ai-msg.usr .ai-av{background:rgba(59,130,246,0.22);border-color:rgba(59,130,246,0.45);color:var(--ice)}
+.ai-bub{padding:11px 15px;border-radius:11px;font-size:0.84rem;line-height:1.68;
+  background:rgba(13,27,56,0.85);border:1px solid rgba(56,189,248,0.18);color:var(--tx);
+  box-shadow:0 3px 14px rgba(0,0,0,0.3);overflow-wrap:break-word}
+.ai-msg.usr .ai-bub{background:linear-gradient(135deg,rgba(37,99,235,0.35),rgba(14,165,233,0.22));
+  border-color:rgba(56,189,248,0.38);color:#fff}
+.ai-bub em{color:#38D9F5;font-style:italic}
+.ai-bub strong{color:#BAE6FD;font-weight:600}
+.ai-bub code{font-family:var(--mono);font-size:0.78rem;padding:2px 6px;border-radius:4px;
+  background:rgba(2,6,18,0.75);border:1px solid rgba(56,189,248,0.2);color:#FFBC42}
+.ai-bub pre{margin:8px 0;padding:10px 12px;border-radius:7px;background:rgba(2,6,18,0.9);
+  border:1px solid rgba(56,189,248,0.2);overflow-x:auto;font-family:var(--mono);font-size:0.77rem;color:var(--ice)}
+.ai-bub pre code{background:none;border:none;padding:0;color:inherit}
+.ai-bub ul,.ai-bub ol{margin:6px 0 6px 20px}
+.ai-bub li{margin:3px 0}
+.ai-bub h3,.ai-bub h4{color:var(--ice);font-weight:600;margin:6px 0 3px;font-size:0.92rem}
+.ai-bub img.chat-img{max-width:260px;max-height:200px;border-radius:8px;margin-bottom:8px;
+  border:1px solid rgba(56,189,248,0.35);display:block}
+.ai-prev-bar{display:none;align-items:center;gap:10px;padding:8px 16px;
+  background:rgba(12,28,58,0.9);border-top:1px solid rgba(56,189,248,0.2)}
+.ai-prev-bar.act{display:flex}
+.ai-prev-thumb{width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--cyan)}
+.ai-foot{display:flex;gap:9px;align-items:flex-end;padding:12px 16px;
+  background:rgba(2,6,16,0.92);border-top:1px solid rgba(56,189,248,0.16)}
+.ai-ta{flex:1;font-family:var(--sans);font-size:0.84rem;padding:9px 13px;border-radius:8px;
+  background:rgba(12,25,52,0.85);border:1px solid rgba(56,189,248,0.24);color:var(--tx);
+  outline:none;resize:none;min-height:42px;max-height:110px;line-height:1.45}
+.ai-ta:focus{border-color:var(--cyan);box-shadow:0 0 12px rgba(6,182,212,0.2)}
 
-/* ── Values Table ── */
-.val-table{width:100%;border-collapse:collapse;font-size:0.78rem}
-.val-table th,.val-table td{padding:6px 8px;border:1px solid var(--bdr);text-align:center;font-variant-numeric:tabular-nums}
-.val-table th{background:var(--bg2);color:var(--tx2);font-weight:600;font-size:0.72rem;text-transform:uppercase}
-.val-table td{color:var(--ice);font-family:var(--mono);transition:all .2s}
-.val-table td:hover{background:rgba(6,182,212,0.08);color:var(--cyan)}
-.val-table tr:hover{background:rgba(59,130,246,0.05)}
-
-/* ── Mode Tabs ── */
-.mode-tabs{display:flex;gap:0;margin-bottom:14px}
-.mode-tab{flex:1;padding:8px;text-align:center;font-size:0.78rem;font-weight:600;border:1px solid var(--bdr);background:var(--bg2);color:var(--tx3);cursor:pointer;transition:all .2s}
-.mode-tab:first-child{border-radius:6px 0 0 6px}
-.mode-tab:last-child{border-radius:0 6px 6px 0}
-.mode-tab.active{background:rgba(59,130,246,0.15);color:var(--blue);border-color:rgba(59,130,246,0.3)}
-.mode-tab:hover:not(.active){color:var(--tx2)}
-
-/* ── ASTC Badge ── */
-.astc-badge{display:inline-block;padding:4px 10px;border-radius:5px;font-family:var(--mono);font-size:0.75rem;font-weight:600;border:1px solid}
-.astc-q1{color:var(--green);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08)}
-.astc-q2{color:var(--blue);border-color:rgba(59,130,246,0.3);background:rgba(59,130,246,0.08)}
-.astc-q3{color:var(--amber);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08)}
-.astc-q4{color:var(--red);border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.08)}
-
-/* ── Euler Display ── */
-.euler-box{padding:12px;border-radius:8px;background:var(--bg2);border:1px solid var(--bdr);font-family:var(--mono);font-size:0.85rem;color:var(--ice);text-align:center;line-height:1.8}
-
-/* ── Area Bar ── */
-.area-bar-wrap{display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg2);border-radius:6px;border:1px solid var(--bdr)}
-.area-bar{flex:1;height:20px;border-radius:4px;overflow:hidden;display:flex;background:var(--bg0)}
-.area-seg{height:100%;transition:width .3s}
-
-/* ── Sub-mode Panels ── */
-.submode-panel{display:none}
-.submode-panel.active{display:block}
-
-/* ── Responsive ── */
-@media(max-width:800px){
-.module-body{flex-direction:column}
-.controls-panel{flex:1 1 auto;max-height:none}
-.canvas-wrap{min-height:300px}
-.hero h1{font-size:2rem}
-.mod-grid{grid-template-columns:1fr}
+/* ═══════════════ RESPONSIVE ═══════════════ */
+@media(max-width:780px){
+  .mb{flex-direction:column}
+  .cp{flex:1 1 auto;max-height:none;width:100%}
+  .cw{min-height:300px}
+  .hero h1{font-size:1.9rem}
+  .mg{grid-template-columns:1fr}
+  #hdr{padding:10px 14px}
+  .badge{font-size:0.68rem;padding:4px 9px}
+  .ai-msg{max-width:95%}
 }
 </style>
 </head>
 <body>
-
-<!-- Math Symbols Background -->
+<!-- Floating Mathematical Symbol Background -->
 <div id="math-bg"></div>
 
-<!-- Header -->
-<header id="app-header">
-<span class="logo">Trigo<span class="colon-glow">:</span>nometry</span>
-<span class="arch-badge">System architectt:Rudra_2494</span>
+<!-- HEADER -->
+<header id="hdr">
+  <span class="logo" onclick="showView('v0')" title="Return to Home">Trigo<span class="colon">:</span>nometry</span>
+  <span class="badge">System architectt:Rudra_2494</span>
 </header>
 
-<!-- Navigation -->
-<nav id="main-nav"><div class="nav-inner" id="nav-inner"></div></nav>
+<!-- NAVIGATION BAR -->
+<nav id="nav"><div id="nav-inner"></div></nav>
 
-<!-- Main Content -->
-<main id="main-content">
-<section id="home-view" class="module-view active">
-<div class="hero">
-<h1>Trigo<span class="colon-glow">:</span>nometry</h1>
-<p class="hero-sub">An Interactive Geometric &amp; Computational Laboratory</p>
-<p class="hero-desc">Connecting right-triangle ratios, unit-circle mechanics, harmonic wave propagation, and real-world engineering through 10 live interactive visualizers with exact surd computation and 60 FPS canvas physics.</p>
-<div class="stat-row">
-<span class="stat-badge">🔬 10 Live Visualizers</span>
-<span class="stat-badge">√ Exact Surd + Decimal Engine</span>
-<span class="stat-badge">⚡ 60FPS Canvas Physics</span>
-<span class="stat-badge">📐 Interactive Proofs</span>
-</div>
-</div>
-<div class="mod-grid" id="mod-grid"></div>
-</section>
-<section id="mod-1" class="module-view"><div class="module-inner"><div class="module-title"><h2>01 · Interactive Unit Circle Explorer</h2><p>Drag the point around the unit circle to explore all six trigonometric ratios and their geometric meanings.</p></div><div class="module-body" id="mod-1-body"></div></div></section>
-<section id="mod-2" class="module-view"><div class="module-inner"><div class="module-title"><h2>02 · Dual-Mode Values Calculator</h2><p>Compute exact decimal values or symbolic surd forms with Euler's complex representation.</p></div><div class="module-body" id="mod-2-body"></div></div></section>
-<section id="mod-3" class="module-view"><div class="module-inner"><div class="module-title"><h2>03 · Unit Circle → Waveform Animator</h2><p>Watch how circular motion unrolls into sinusoidal waves in real time.</p></div><div class="module-body" id="mod-3-body"></div></div></section>
-<section id="mod-4" class="module-view"><div class="module-inner"><div class="module-title"><h2>04 · Dynamic Right-Triangle Solver</h2><p>Adjust base, altitude, or angle to auto-compute all sides, ratios, and the complementary angle (SOH-CAH-TOA).</p></div><div class="module-body" id="mod-4-body"></div></div></section>
-<section id="mod-5" class="module-view"><div class="module-inner"><div class="module-title"><h2>05 · Wave Transformation Sandbox</h2><p>Explore y = A·sin(Bx − C) + D with live parameter sliders and a reference wave overlay.</p></div><div class="module-body" id="mod-5-body"></div></div></section>
-<section id="mod-6" class="module-view"><div class="module-inner"><div class="module-title"><h2>06 · Pythagorean Identity Prover</h2><p>Geometric proof that sin²θ + cos²θ = 1 using literal area squares on a unit circle triangle.</p></div><div class="module-body" id="mod-6-body"></div></div></section>
-<section id="mod-7" class="module-view"><div class="module-inner"><div class="module-title"><h2>07 · Height &amp; Distance Simulator</h2><p>Real-world clinometer and solar shadow scenarios with live trigonometric calculation.</p></div><div class="module-body" id="mod-7-body"></div></div></section>
-<section id="mod-8" class="module-view"><div class="module-inner"><div class="module-title"><h2>08 · Degree ↔ Radian Arc-Length Visualizer</h2><p>Interactive bidirectional converter with visual arc-length proof that 1 rad ≈ 57.2958°.</p></div><div class="module-body" id="mod-8-body"></div></div></section>
-<section id="mod-9" class="module-view"><div class="module-inner"><div class="module-title"><h2>09 · Tangent &amp; Asymptote Visualizer</h2><p>Explore y = tan(x) with asymptotes and a synced unit-circle tangent line.</p></div><div class="module-body" id="mod-9-body"></div></div></section>
-<section id="mod-10" class="module-view"><div class="module-inner"><div class="module-title"><h2>10 · Compound Angle Identity Visualizer</h2><p>Geometric proof of sin(A+B) and cos(A+B) with independent angle sliders and numerical verification.</p></div><div class="module-body" id="mod-10-body"></div></div></section>
+<!-- VIEWS -->
+<main id="main">
+  <!-- HOME VIEW -->
+  <section id="v0" class="view act"><div class="vi">
+    <div class="hero">
+      <h1>Trigo<span class="colon">:</span>nometry</h1>
+      <p class="hero-s">Class 10 &amp; 11 Interactive Mathematics Laboratory</p>
+      <p class="hero-d">A visual bridge connecting Class 10 right-triangle geometry &amp; sun-shadow heights to Class 11 radians, ASTC quadrant analysis, compound angle proofs, and a Groq Vision AI Doubt Solver — rendered live at 60 FPS.</p>
+      <div class="sr">
+        <span class="sb">🔬 10 Interactive Modules + AI Vision Tutor</span>
+        <span class="sb">📐 Class 10 &amp; 11 Engine</span>
+        <span class="sb">☀️ Sun &amp; Shadow Simulator</span>
+        <span class="sb">🤖 Groq Multimodal Doubt Solver</span>
+      </div>
+    </div>
+    <div class="mg" id="mg"></div>
+  </div></section>
+
+  <!-- 11 INTERACTIVE MODULE VIEWS -->
+  <section id="v1"  class="view"><div class="vi"><div class="vt"><h2>01 · Continuous Oscilloscope Wave</h2><p>Conveyor-belt cardiac-monitor model — watch circular motion unroll into scrolling waveforms in real time.</p></div><div class="mb" id="b1"></div></div></section>
+  <section id="v2"  class="view"><div class="vi"><div class="vt"><h2>02 · Geometric Dissection of Standard Angles</h2><p>Visual proof of sin/cos values for 30°, 45°, 60° from equilateral and isosceles right triangles.</p></div><div class="mb" id="b2"></div></div></section>
+  <section id="v3"  class="view"><div class="vi"><div class="vt"><h2>03 · Co-Function &amp; Complementary Angle Flipper</h2><p>Click to swap angles A ↔ C and watch the triangle re-label in real time: sin(A) = cos(90°−A).</p></div><div class="mb" id="b3"></div></div></section>
+  <section id="v4"  class="view"><div class="vi"><div class="vt"><h2>04 · Geometric Square Prover: sin²θ + cos²θ = 1</h2><p>Literal geometric area squares growing from each triangle side, dynamically proving the Pythagorean identity.</p></div><div class="mb" id="b4"></div></div></section>
+  <section id="v5"  class="view"><div class="vi"><div class="vt"><h2>05 · Two-Point Elevation &amp; Depression Solver</h2><p>Surveyor's model: h = d / (cotβ − cotα) with two observation points and live sightline rendering.</p></div><div class="mb" id="b5"></div></div></section>
+  <section id="v6"  class="view"><div class="vi"><div class="vt"><h2>06 · Sun Altitude &amp; Shadow Length: tan θ = h / s</h2><p>Move the Sun across the sky to see how Sun Altitude θ and Object Height h control ground shadow length s = h / tan θ.</p></div><div class="mb" id="b6"></div></div></section>
+  <section id="v7"  class="view"><div class="vi"><div class="vt"><h2>07 · 4-Quadrant ASTC Explorer</h2><p>All–Sine–Tan–Cos sign rules visualized on the unit circle with dynamic coordinate readouts.</p></div><div class="mb" id="b7"></div></div></section>
+  <section id="v8"  class="view"><div class="vi"><div class="vt"><h2>08 · Even vs. Odd Function Mirror</h2><p>Simultaneous θ and −θ vectors proving cos(−θ) = cos θ (even) and sin(−θ) = −sin θ (odd).</p></div><div class="mb" id="b8"></div></div></section>
+  <section id="v9"  class="view"><div class="vi"><div class="vt"><h2>09 · Radian Measure &amp; Arc Length: l = rθ</h2><p>Bridging Class 10 Degrees to Class 11 Radians — see how 1 Radian (≈ 57.3°) is simply when the curved arc length l equals the radius r.</p></div><div class="mb" id="b9"></div></div></section>
+  <section id="v10" class="view"><div class="vi"><div class="vt"><h2>10 · Compound Angles: Why sin(A+B) ≠ sin A + sin B</h2><p>Stack angles A and B on the unit circle to see why sin(A+B) = sin A cos B + cos A sin B — and calculate sin 75° from Class 10 standard angles!</p></div><div class="mb" id="b10"></div></div></section>
+  <section id="v11" class="view"><div class="vi"><div class="vt"><h2>11 · Trigo:AI — Groq Vision Math Doubt Solver</h2><p>Snap or upload a photo of any trigonometry textbook problem or ask a question — powered by Groq Multimodal Vision with instant *italic* &amp; **bold** math formatting.</p></div><div id="b11"></div></div></section>
 </main>
 
 <script>
-/* ═══════════════════════════════════════════
-   SHARED UTILITIES
-   ═══════════════════════════════════════════ */
+'use strict';
 
-// ── Canvas Kit ──
-const CK={
-  setup(c){const d=window.devicePixelRatio||1,r=c.getBoundingClientRect();c.width=r.width*d;c.height=r.height*d;const x=c.getContext('2d');x.scale(d,d);return{ctx:x,w:r.width,h:r.height,dpr:d}},
-  clear(x,w,h){x.clearRect(0,0,w,h)},
-  line(x,x1,y1,x2,y2,c='#3B82F6',lw=1.5,dash=[]){x.save();x.beginPath();x.setLineDash(dash);x.strokeStyle=c;x.lineWidth=lw;x.moveTo(x1,y1);x.lineTo(x2,y2);x.stroke();x.restore()},
-  circle(x,cx,cy,r,c='#3B82F6',lw=1.5,fill=null){x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);if(fill){x.fillStyle=fill;x.fill()}x.strokeStyle=c;x.lineWidth=lw;x.stroke()},
-  arc(x,cx,cy,r,a1,a2,c='#06B6D4',lw=2,ccw=false){x.beginPath();x.arc(cx,cy,r,a1,a2,ccw);x.strokeStyle=c;x.lineWidth=lw;x.stroke()},
-  text(x,s,px,py,c='#E2E8F0',f='13px Inter,sans-serif',a='center',b='middle'){x.save();x.fillStyle=c;x.font=f;x.textAlign=a;x.textBaseline=b;x.fillText(s,px,py);x.restore()},
-  arrow(x,x1,y1,x2,y2,c='#3B82F6',lw=2){const a=Math.atan2(y2-y1,x2-x1),l=8;CK.line(x,x1,y1,x2,y2,c,lw);x.save();x.fillStyle=c;x.beginPath();x.moveTo(x2,y2);x.lineTo(x2-l*Math.cos(a-.4),y2-l*Math.sin(a-.4));x.lineTo(x2-l*Math.cos(a+.4),y2-l*Math.sin(a+.4));x.closePath();x.fill();x.restore()},
-  dot(x,cx,cy,r,c='#06B6D4'){x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.fillStyle=c;x.fill()},
-  fillRect(x,px,py,w,h,c){x.fillStyle=c;x.fillRect(px,py,w,h)},
-  grid(x,ox,oy,w,h,step,c='rgba(56,189,248,0.06)'){x.save();x.strokeStyle=c;x.lineWidth=0.5;for(let i=ox%step;i<w;i+=step){x.beginPath();x.moveTo(i,0);x.lineTo(i,h);x.stroke()}for(let i=oy%step;i<h;i+=step){x.beginPath();x.moveTo(0,i);x.lineTo(w,i);x.stroke()}x.restore()},
-  axes(x,ox,oy,w,h,c='rgba(186,230,253,0.15)'){CK.line(x,0,oy,w,oy,c,1);CK.line(x,ox,0,ox,h,c,1)}
+/* ══════════════════════════════════════════════════
+   SHARED CANVAS KIT (WITH ZERO/NEGATIVE STEP GUARD)
+══════════════════════════════════════════════════ */
+const DPR = window.devicePixelRatio || 1;
+const TAU = Math.PI * 2;
+const CK = {
+  setup(c) {
+    const r = c.getBoundingClientRect();
+    const w = r.width, h = r.height;
+    if (w > 0 && h > 0) {
+      c.width = w * DPR;
+      c.height = h * DPR;
+    }
+    const x = c.getContext('2d');
+    if (w > 0 && h > 0) {
+      x.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    return { x, w, h };
+  },
+  clr(x, w, h) {
+    if (w <= 0 || h <= 0) return;
+    x.clearRect(0, 0, w, h);
+  },
+  ln(x, x1, y1, x2, y2, col = '#3B82F6', lw = 1.5, dash = []) {
+    x.save(); x.beginPath(); x.setLineDash(dash); x.strokeStyle = col;
+    x.lineWidth = lw; x.moveTo(x1, y1); x.lineTo(x2, y2); x.stroke(); x.restore();
+  },
+  circ(x, cx, cy, r, col = '#3B82F6', lw = 1.5, fill = null) {
+    if (r <= 0) return;
+    x.beginPath(); x.arc(cx, cy, r, 0, TAU);
+    if (fill) { x.fillStyle = fill; x.fill(); }
+    x.strokeStyle = col; x.lineWidth = lw; x.stroke();
+  },
+  arc(x, cx, cy, r, a1, a2, col = '#06B6D4', lw = 2, ccw = false) {
+    if (r <= 0) return;
+    x.beginPath(); x.arc(cx, cy, r, a1, a2, ccw);
+    x.strokeStyle = col; x.lineWidth = lw; x.stroke();
+  },
+  txt(x, s, px, py, col = '#D6EEFF', f = '12px Inter,sans-serif', a = 'center', b = 'middle') {
+    x.save(); x.fillStyle = col; x.font = f;
+    x.textAlign = a; x.textBaseline = b; x.fillText(s, px, py); x.restore();
+  },
+  dot(x, cx, cy, r, col = '#06B6D4') {
+    if (r <= 0) return;
+    x.beginPath(); x.arc(cx, cy, r, 0, TAU); x.fillStyle = col; x.fill();
+  },
+  arr(x, x1, y1, x2, y2, col = '#3B82F6', lw = 2) {
+    const a = Math.atan2(y2 - y1, x2 - x1), L = 8;
+    CK.ln(x, x1, y1, x2, y2, col, lw);
+    x.save(); x.fillStyle = col; x.beginPath();
+    x.moveTo(x2, y2);
+    x.lineTo(x2 - L * Math.cos(a - .42), y2 - L * Math.sin(a - .42));
+    x.lineTo(x2 - L * Math.cos(a + .42), y2 - L * Math.sin(a + .42));
+    x.closePath(); x.fill(); x.restore();
+  },
+  grid(x, ox, oy, w, h, s, col = 'rgba(56,189,248,0.07)') {
+    // CRITICAL FIX: Prevent infinite loop when canvas is hidden (w=0, h=0) or step s <= 0
+    if (w <= 0 || h <= 0 || !isFinite(s) || s <= 2) return;
+    x.save(); x.strokeStyle = col; x.lineWidth = .5;
+    const startX = ((ox % s) + s) % s;
+    const startY = ((oy % s) + s) % s;
+    for (let i = startX; i <= w; i += s) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, h); x.stroke(); }
+    for (let j = startY; j <= h; j += s) { x.beginPath(); x.moveTo(0, j); x.lineTo(w, j); x.stroke(); }
+    x.restore();
+  },
+  axes(x, ox, oy, w, h, col = 'rgba(168,212,245,0.18)') {
+    if (w <= 0 || h <= 0) return;
+    CK.ln(x, 0, oy, w, oy, col, 1);
+    CK.ln(x, ox, 0, ox, h, col, 1);
+  }
 };
 
-// ── UI Builder ──
-const UI={
-  el(tag,cls,par,html=''){const e=document.createElement(tag);if(cls)e.className=cls;if(html)e.innerHTML=html;if(par)par.appendChild(e);return e},
-  slider(par,label,min,max,step,val,onChange){
-    const g=UI.el('div','ctrl-group',par);
-    const lb=UI.el('label','',g,label+': <span class="readout">'+val+'</span>');
-    const inp=UI.el('input','styled-slider',g);inp.type='range';inp.min=min;inp.max=max;inp.step=step;inp.value=val;
-    const ro=lb.querySelector('.readout');
-    inp.oninput=()=>{ro.textContent=Number(inp.value).toFixed(step<1?Math.max(1,-Math.floor(Math.log10(step))):0);onChange(+inp.value)};
-    return{input:inp,readout:ro,set(v){inp.value=v;ro.textContent=typeof v==='number'?v.toFixed(step<1?Math.max(1,-Math.floor(Math.log10(step))):0):v;onChange(+v)},group:g}
+/* ══════════════════════════════════════════════════
+   SHARED UI BUILDER
+══════════════════════════════════════════════════ */
+const UI = {
+  el(t, c, p, h = '') {
+    const e = document.createElement(t);
+    if (c) e.className = c;
+    if (h) e.innerHTML = h;
+    if (p) p.appendChild(e);
+    return e;
   },
-  pills(par,opts,onChange,aIdx=0){
-    const g=UI.el('div','pill-group',par);
-    const bs=opts.map((o,i)=>{const b=UI.el('button','pill'+(i===aIdx?' active':''),g,o);b.onclick=()=>{bs.forEach(x=>x.classList.remove('active'));b.classList.add('active');onChange(i,o)};return b});
-    return{setActive(i){bs.forEach(x=>x.classList.remove('active'));if(bs[i])bs[i].classList.add('active')},btns:bs}
+  canvas(p, id, extra = '') {
+    const w = UI.el('div', 'cw' + (extra ? ' ' + extra : ''), p);
+    const c = document.createElement('canvas'); c.id = id; w.appendChild(c);
+    return { wrap: w, canvas: c };
   },
-  badge(par,label,init='—'){
-    const b=UI.el('div','badge',par,'<span class="badge-label">'+label+'</span><span class="badge-value readout">'+init+'</span>');
-    const v=b.querySelector('.badge-value');
-    return{el:b,update(val){v.textContent=val},updateHTML(h){v.innerHTML=h}}
+  slider(p, lbl, mn, mx, st, v, cb) {
+    const g = UI.el('div', 'cg', p);
+    const lb = UI.el('label', '', g, lbl + ': <span class="ro">' + v + '</span>');
+    const ro = lb.querySelector('.ro');
+    const inp = UI.el('input', 'sl', g);
+    inp.type = 'range'; inp.min = mn; inp.max = mx; inp.step = st; inp.value = v;
+    const dp = st < 1 ? Math.max(1, -Math.floor(Math.log10(st))) : 0;
+    inp.oninput = () => { const n = +inp.value; ro.textContent = n.toFixed(dp); cb(n); };
+    return { inp, ro, set(val) { inp.value = val; ro.textContent = (+val).toFixed(dp); cb(+val); }, g };
   },
-  btn(par,text,onClick,cls='btn'){const b=UI.el('button',cls,par,text);b.onclick=onClick;return b},
-  canvas(par,id,extraCls=''){
-    const w=UI.el('div','canvas-wrap'+((extraCls)?' '+extraCls:''),par);
-    const c=document.createElement('canvas');c.id=id;w.appendChild(c);return{wrap:w,canvas:c}
-  },
-  checkbox(par,label,checked,onChange){
-    const lb=UI.el('label','toggle-label',par);
-    const inp=document.createElement('input');inp.type='checkbox';inp.checked=checked;
-    inp.onchange=()=>onChange(inp.checked);lb.appendChild(inp);lb.append(' '+label);
-    return{input:inp,set(v){inp.checked=v}}
-  },
-  sep(par){UI.el('div','ctrl-sep',par)}
-};
-
-// ── Math Engine ──
-const M=Math,PI=M.PI,TAU=2*PI;
-const MathE={
-  toRad:d=>d*PI/180,
-  toDeg:r=>r*180/PI,
-  fmtN:(v,d=6)=>isFinite(v)?v.toFixed(d):'Undefined',
-  fmtS:(v,d=4)=>isFinite(v)?v.toFixed(d):'Undef',
-  quadrant(deg){const d=((deg%360)+360)%360;if(d===0||d===360)return 1;if(d<90)return 1;if(d===90)return 1;if(d<180)return 2;if(d===180)return 2;if(d<270)return 3;if(d===270)return 3;return 4},
-  astcLabel:q=>['','All (+)','Sin (+)','Tan (+)','Cos (+)'][q],
-  astcCls:q=>['','astc-q1','astc-q2','astc-q3','astc-q4'][q],
-  clamp:(v,lo,hi)=>M.max(lo,M.min(hi,v))
-};
-
-// Exact symbolic values
-const frac=(n,d)=>'<span class="frac"><span class="frac-n">'+n+'</span><span class="frac-d">'+d+'</span></span>';
-const EXACT={};
-(function(){
-const U='Undefined',s2=frac('√2','2'),s3=frac('√3','2'),s33=frac('√3','3'),
-  s62p=frac('√6+√2','4'),s62m=frac('√6−√2','4');
-const data=[
-[0,'0','1','0',U,'1',U],
-[15,s62m,s62p,'2−√3',frac('4','√6−√2'),frac('4','√6+√2'),'2+√3'],
-[30,frac('1','2'),s3,s33,'2',frac('2√3','3'),'√3'],
-[45,s2,s2,'1','√2','√2','1'],
-[60,s3,frac('1','2'),'√3',frac('2√3','3'),'2',s33],
-[75,s62p,s62m,'2+√3',frac('4','√6+√2'),frac('4','√6−√2'),'2−√3'],
-[90,'1','0',U,'1',U,'0'],
-[120,s3,'−'+frac('1','2'),'−√3',frac('2√3','3'),'−2','−'+s33],
-[135,s2,'−'+s2,'−1','√2','−√2','−1'],
-[150,frac('1','2'),'−'+s3,'−'+s33,'2','−'+frac('2√3','3'),'−√3'],
-[180,'0','−1','0',U,'−1',U],
-[210,'−'+frac('1','2'),'−'+s3,s33,'−2','−'+frac('2√3','3'),'√3'],
-[225,'−'+s2,'−'+s2,'1','−√2','−√2','1'],
-[240,'−'+s3,'−'+frac('1','2'),'√3','−'+frac('2√3','3'),'−2',s33],
-[270,'−1','0',U,'−1',U,'0'],
-[300,'−'+s3,frac('1','2'),'−√3','−'+frac('2√3','3'),'2','−'+s33],
-[315,'−'+s2,s2,'−1','−√2','√2','−1'],
-[330,'−'+frac('1','2'),s3,'−'+s33,'−2',frac('2√3','3'),'−√3'],
-[360,'0','1','0',U,'1',U]
-];
-data.forEach(r=>{EXACT[r[0]]={sin:r[1],cos:r[2],tan:r[3],csc:r[4],sec:r[5],cot:r[6]}});
-})();
-const EXACT_ANGLES=[0,15,30,45,60,75,90,120,135,150,180,210,225,240,270,300,315,330,360];
-
-// Euler form HTML
-function eulerHTML(deg){
-  const r=MathE.toRad(deg),c=M.cos(r),s=M.sin(r);
-  const cf=MathE.fmtN(c,4),sf=MathE.fmtN(s,4);
-  const sign=s>=0?' + ':' − ';
-  return 'e<sup>i·'+deg+'°</sup> = '+cf+sign+M.abs(s).toFixed(4)+'i';
-}
-
-// ── Navigation ──
-const NAV_ITEMS=[
-  {id:'home-view',label:'Home'},
-  {id:'mod-1',label:'Unit Circle'},
-  {id:'mod-2',label:'Calculator'},
-  {id:'mod-3',label:'Wave Animator'},
-  {id:'mod-4',label:'△ Solver'},
-  {id:'mod-5',label:'Wave Sandbox'},
-  {id:'mod-6',label:'sin²+cos²=1'},
-  {id:'mod-7',label:'Height & Dist'},
-  {id:'mod-8',label:'Deg↔Rad'},
-  {id:'mod-9',label:'Tangent'},
-  {id:'mod-10',label:'sin(A+B)'}
-];
-const Nav={
-  onShow:{},
-  current:'home-view',
-  pills:[],
-  init(){
-    const ni=document.getElementById('nav-inner');
-    Nav.pills=NAV_ITEMS.map((item,i)=>{
-      const b=UI.el('button','nav-pill'+(i===0?' active':''),ni,item.label);
-      b.onclick=()=>Nav.show(item.id);
+  pills(p, opts, cb, ai = 0) {
+    const g = UI.el('div', 'pg', p);
+    const bs = opts.map((o, i) => {
+      const b = UI.el('button', 'pl' + (i === ai ? ' act' : ''), g, o);
+      b.onclick = () => { bs.forEach(x => x.classList.remove('act')); b.classList.add('act'); cb(i, o); };
       return b;
     });
+    return { setActive(i) { bs.forEach(x => x.classList.remove('act')); if (bs[i]) bs[i].classList.add('act'); }, btns: bs };
   },
-  show(id){
-    document.querySelectorAll('.module-view').forEach(v=>v.classList.remove('active'));
-    const el=document.getElementById(id);if(el)el.classList.add('active');
-    Nav.pills.forEach((p,i)=>{p.classList.toggle('active',NAV_ITEMS[i].id===id)});
-    Anim.stopAll();
-    Nav.current=id;
-    if(Nav.onShow[id])Nav.onShow[id]();
+  badge(p, lbl, init = '—') {
+    const b = UI.el('div', 'bx', p, '<span class="bl">' + lbl + '</span><span class="bv ro">' + init + '</span>');
+    const v = b.querySelector('.bv');
+    return { el: b, set(val) { v.textContent = val; }, html(h) { v.innerHTML = h; } };
+  },
+  btn(p, txt, cb, cls = 'btn') {
+    const b = UI.el('button', cls, p, txt); b.onclick = cb; return b;
+  },
+  sep(p) { UI.el('div', 'sep', p); },
+  cb(p, lbl, chk, cb2) {
+    const l = UI.el('label', 'tl', p);
+    const i = document.createElement('input'); i.type = 'checkbox'; i.checked = chk;
+    i.onchange = () => cb2(i.checked); l.appendChild(i); l.append(' ' + lbl);
+    return { inp: i };
   }
 };
 
-// ── Animation Manager ──
-const Anim={
-  loops:{},
-  register(id,fn){this.loops[id]={fn,running:false,rafId:null}},
-  start(id){const l=this.loops[id];if(!l||l.running)return;l.running=true;const tick=t=>{if(!l.running)return;l.fn(t);l.rafId=requestAnimationFrame(tick)};l.rafId=requestAnimationFrame(tick)},
-  stop(id){const l=this.loops[id];if(!l)return;l.running=false;if(l.rafId)cancelAnimationFrame(l.rafId);l.rafId=null},
-  stopAll(){Object.keys(this.loops).forEach(id=>this.stop(id))}
-};
+/* ══════════════════════════════════════════════════
+   MATH & POINTER HELPERS
+══════════════════════════════════════════════════ */
+const M = Math;
+const R2D = 180 / M.PI, D2R = M.PI / 180;
+const fmt = (v, d = 4) => (isFinite(v) && M.abs(v) < 1e6) ? v.toFixed(d) : 'Undef';
+const clamp = (v, lo, hi) => M.max(lo, M.min(hi, v));
 
-// ── Math Background Symbols ──
-function initMathBG(){
-  const syms=['sin','cos','tan','θ','π','2π','∞','∑','∫','√3/2','Δ','α','β','ω','⊥','∠','φ','sec','csc','cot'];
-  const bg=document.getElementById('math-bg');
-  for(let i=0;i<80;i++){
-    const s=UI.el('span','math-sym',bg,syms[M.floor(M.random()*syms.length)]);
-    s.style.left=M.random()*100+'%';s.style.top=M.random()*100+'%';
-    s.style.fontSize=(10+M.random()*18)+'px';
-    s.style.opacity=(0.04+M.random()*0.04).toFixed(3);
-    s.style.transform='rotate('+(M.random()*60-30)+'deg)';
-  }
+function getPointerPos(e, canvas) {
+  const r = canvas.getBoundingClientRect();
+  const pt = e.touches && e.touches.length ? e.touches[0] : e;
+  return { x: pt.clientX - r.left, y: pt.clientY - r.top, w: r.width, h: r.height };
 }
 
-// ── Module Cards for Homepage ──
-const MOD_INFO=[
-  {n:'01',t:'Unit Circle Explorer',d:'Drag a point around the circle to visualize all 6 trig ratios with ASTC quadrant signs.'},
-  {n:'02',t:'Dual-Mode Calculator',d:'Exact decimal (6 d.p.) and symbolic surd/radical forms with Euler\'s complex representation.'},
-  {n:'03',t:'Waveform Animator',d:'Watch circular motion unroll into sinusoidal waves with adjustable angular speed.'},
-  {n:'04',t:'Right-Triangle Solver',d:'SOH-CAH-TOA solver with interactive sides, area, complementary angle, and ratio highlighting.'},
-  {n:'05',t:'Wave Transform Sandbox',d:'y = A·sin(Bx − C) + D oscilloscope with amplitude, frequency, phase, and vertical shift.'},
-  {n:'06',t:'Pythagorean Prover',d:'Visual geometric squares proving sin²θ + cos²θ = 1 with live area sums.'},
-  {n:'07',t:'Height & Distance',d:'Building clinometer and solar shadow simulator with real-world trig calculations.'},
-  {n:'08',t:'Deg ↔ Rad Visualizer',d:'Bidirectional converter with arc-length animation proving 1 rad ≈ 57.2958°.'},
-  {n:'09',t:'Tangent & Asymptotes',d:'Plot tan(x) with dashed asymptotes synced to a unit circle tangent line.'},
-  {n:'10',t:'Compound Angle',d:'Geometric proof of sin(A+B) and cos(A+B) identities with dual angle sliders.'}
+/* ══════════════════════════════════════════════════
+   NAV + ROUTER
+══════════════════════════════════════════════════ */
+const MODS = [
+  { id: 'v0',  label: 'Home' },
+  { id: 'v1',  label: '01 Oscilloscope' },
+  { id: 'v2',  label: '02 Std Angles' },
+  { id: 'v3',  label: '03 Co-Functions' },
+  { id: 'v4',  label: '04 sin²+cos²=1' },
+  { id: 'v5',  label: '05 Elevation' },
+  { id: 'v6',  label: '06 Sun Shadow' },
+  { id: 'v7',  label: '07 ASTC' },
+  { id: 'v8',  label: '08 Even/Odd' },
+  { id: 'v9',  label: '09 Radians l=rθ' },
+  { id: 'v10', label: '10 sin(A+B)' },
+  { id: 'v11', label: '11 AI Math Tutor' }
 ];
+const onShow = {};
+let curView = 'v0';
+const navPills = [];
 
-function initModGrid(){
-  const g=document.getElementById('mod-grid');
-  MOD_INFO.forEach((m,i)=>{
-    const c=UI.el('div','mod-card',g);c.innerHTML='<div class="mod-card-num">'+m.n+'</div><h3>'+m.t+'</h3><p>'+m.d+'</p>';
-    c.onclick=()=>Nav.show('mod-'+(i+1));
-  });
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('act'));
+  const el = document.getElementById(id); if (el) el.classList.add('act');
+  navPills.forEach((p, i) => p.classList.toggle('act', MODS[i].id === id));
+  Anim.stopAll();
+  curView = id;
+  if (onShow[id]) {
+    requestAnimationFrame(() => onShow[id]());
+  }
 }
 
-
-
-/* ═══════════════════════════════════════════
-   MODULE 1 — Interactive Unit Circle Explorer
-   ═══════════════════════════════════════════ */
-function initMod1(){
-  const body=document.getElementById('mod-1-body');
-  const {wrap,canvas}=UI.canvas(body,'uc-canvas');
-  const cp=UI.el('div','controls-panel',body);
-
-  let angle=45,dragging=false;
-  let showTan=false,showCot=false,showSec=false,showCsc=false;
-
-  // Angle slider
-  const aSlider=UI.slider(cp,'Angle (°)',0,360,1,angle,v=>{angle=v;draw()});
-
-  // Preset pills
-  UI.el('label','',cp,'Presets');
-  UI.pills(cp,['0°','30°','45°','60°','90°','120°','135°','150°','180°','210°','225°','240°','270°','300°','315°','330°','360°'],(i,o)=>{
-    angle=parseInt(o);aSlider.set(angle);draw();
-  },-1);
-
-  UI.sep(cp);
-  UI.el('label','',cp,'Toggle Lines');
-  const tTan=UI.checkbox(cp,'tan θ',false,v=>{showTan=v;draw()});
-  const tCot=UI.checkbox(cp,'cot θ',false,v=>{showCot=v;draw()});
-  const tSec=UI.checkbox(cp,'sec θ',false,v=>{showSec=v;draw()});
-  const tCsc=UI.checkbox(cp,'csc θ',false,v=>{showCsc=v;draw()});
-
-  UI.sep(cp);
-  const badgeRow=UI.el('div','badge-row',cp);
-  const bSin=UI.badge(badgeRow,'sin','—');
-  const bCos=UI.badge(badgeRow,'cos','—');
-  const bTan=UI.badge(badgeRow,'tan','—');
-  const badgeRow2=UI.el('div','badge-row',cp);
-  const bCsc=UI.badge(badgeRow2,'csc','—');
-  const bSec=UI.badge(badgeRow2,'sec','—');
-  const bCot=UI.badge(badgeRow2,'cot','—');
-
-  UI.sep(cp);
-  UI.el('label','',cp,'Quadrant');
-  const astcEl=UI.el('span','astc-badge astc-q1',cp,'Q1 · All (+)');
-
-  function draw(){
-    const{ctx,w,h}=CK.setup(canvas);
-    CK.clear(ctx,w,h);
-    const cx=w*0.5,cy=h*0.5,R=M.min(w,h)*0.38;
-    CK.grid(ctx,cx,cy,w,h,R/4);
-    CK.axes(ctx,cx,cy,w,h);
-
-    // Unit circle
-    CK.circle(ctx,cx,cy,R,'rgba(59,130,246,0.4)',1.5);
-
-    // Labels
-    CK.text(ctx,'0°, 1',cx+R+20,cy,'#64748B','11px Inter,sans-serif');
-    CK.text(ctx,'90°',cx,cy-R-12,'#64748B','11px Inter,sans-serif');
-    CK.text(ctx,'180°',cx-R-24,cy,'#64748B','11px Inter,sans-serif');
-    CK.text(ctx,'270°',cx,cy+R+16,'#64748B','11px Inter,sans-serif');
-
-    const rad=MathE.toRad(angle);
-    const px=cx+R*M.cos(rad),py=cy-R*M.sin(rad);
-    const sinV=M.sin(rad),cosV=M.cos(rad);
-    const tanV=M.tan(rad),cotV=1/tanV,secV=1/cosV,cscV=1/sinV;
-
-    // Angle arc
-    CK.arc(ctx,cx,cy,R*0.18,0,-rad,'#06B6D4',2,true);
-    const labelR=R*0.25,la=-rad/2;
-    CK.text(ctx,angle+'°',cx+labelR*M.cos(la),cy+labelR*M.sin(la),'#06B6D4','12px JetBrains Mono,monospace');
-
-    // Radius line
-    CK.line(ctx,cx,cy,px,py,'#3B82F6',2);
-
-    // cos projection (horizontal)
-    CK.line(ctx,cx,cy,px,cy,'#22C55E',2.5);
-    CK.text(ctx,'cos',cx+(px-cx)/2,cy+16,'#22C55E','11px JetBrains Mono,monospace');
-
-    // sin projection (vertical)
-    CK.line(ctx,px,cy,px,py,'#EF4444',2.5);
-    CK.text(ctx,'sin',px+14,cy+(py-cy)/2,'#EF4444','11px JetBrains Mono,monospace');
-
-    // Dashed drop lines
-    CK.line(ctx,px,py,px,cy,'rgba(239,68,68,0.25)',1,[4,4]);
-    CK.line(ctx,px,py,cx,py,'rgba(34,197,94,0.25)',1,[4,4]);
-
-    // tan line (tangent at point, from x-axis intercept)
-    if(showTan && M.abs(cosV)>0.01){
-      const tanLen=R*tanV;
-      CK.line(ctx,px,py,cx+R/cosV,cy,'#F59E0B',1.8);
-      CK.text(ctx,'tan',cx+R/cosV+8,cy-8,'#F59E0B','10px JetBrains Mono,monospace');
-    }
-    // cot line
-    if(showCot && M.abs(sinV)>0.01){
-      CK.line(ctx,px,py,cx,cy-R/sinV,'#A855F7',1.8);
-      CK.text(ctx,'cot',cx-14,cy-R/sinV,'#A855F7','10px JetBrains Mono,monospace');
-    }
-    // sec line
-    if(showSec && M.abs(cosV)>0.01){
-      CK.line(ctx,cx,cy,cx+R/cosV,cy,'#0EA5E9',1.8);
-      CK.text(ctx,'sec',cx+R/(2*cosV),cy+14,'#0EA5E9','10px JetBrains Mono,monospace');
-    }
-    // csc line
-    if(showCsc && M.abs(sinV)>0.01){
-      CK.line(ctx,cx,cy,cx,cy-R/sinV,'#EC4899',1.8);
-      CK.text(ctx,'csc',cx-18,cy-R/(2*sinV),'#EC4899','10px JetBrains Mono,monospace');
-    }
-
-    // Point
-    CK.dot(ctx,px,py,6,'#06B6D4');
-    CK.dot(ctx,px,py,3,'#fff');
-
-    // Coordinate label
-    CK.text(ctx,'('+cosV.toFixed(3)+', '+sinV.toFixed(3)+')',px+(cosV>=0?12:-12),py-16,
-      '#BAE6FD','11px JetBrains Mono,monospace',cosV>=0?'left':'right');
-
-    // Update badges
-    bSin.update(MathE.fmtN(sinV,6));bCos.update(MathE.fmtN(cosV,6));bTan.update(MathE.fmtN(tanV,6));
-    bCsc.update(MathE.fmtN(cscV,6));bSec.update(MathE.fmtN(secV,6));bCot.update(MathE.fmtN(cotV,6));
-
-    const q=MathE.quadrant(angle);
-    astcEl.className='astc-badge '+MathE.astcCls(q);
-    astcEl.textContent='Q'+q+' · '+MathE.astcLabel(q);
-  }
-
-  // Fix the cos label bug above — redraw correctly
-  // (the label line was a typo in template, actual draw handles it fine via CK.text)
-
-  // Dragging
-  canvas.addEventListener('mousedown',e=>{
-    const rect=canvas.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
-    const{w,h}=rect;const cx2=w*0.5,cy2=h*0.5,R2=M.min(w,h)*0.38;
-    const dx=mx-cx2-R2*M.cos(MathE.toRad(angle)),dy=my-cy2+R2*M.sin(MathE.toRad(angle));
-    if(M.sqrt(dx*dx+dy*dy)<20)dragging=true;
+(function buildNav() {
+  const ni = document.getElementById('nav-inner');
+  MODS.forEach((m, i) => {
+    const b = UI.el('button', 'np' + (i === 0 ? ' act' : ''), ni, m.label);
+    b.onclick = () => showView(m.id);
+    navPills.push(b);
   });
-  canvas.addEventListener('mousemove',e=>{
-    if(!dragging)return;
-    const rect=canvas.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
-    const cx2=rect.width*0.5,cy2=rect.height*0.5;
-    let a=MathE.toDeg(M.atan2(-(my-cy2),mx-cx2));
-    if(a<0)a+=360;
-    angle=M.round(a);aSlider.set(angle);draw();
+})();
+
+/* ══════════════════════════════════════════════════
+   ANIMATION MANAGER
+══════════════════════════════════════════════════ */
+const Anim = {
+  loops: {},
+  reg(id, fn) { this.loops[id] = { fn, run: false, rid: null }; },
+  start(id) {
+    const l = this.loops[id]; if (!l || l.run) return; l.run = true;
+    const tick = () => { if (!l.run) return; l.fn(); l.rid = requestAnimationFrame(tick); };
+    l.rid = requestAnimationFrame(tick);
+  },
+  stop(id) { const l = this.loops[id]; if (!l) return; l.run = false; if (l.rid) cancelAnimationFrame(l.rid); },
+  stopAll() { Object.keys(this.loops).forEach(id => this.stop(id)); }
+};
+
+/* ══════════════════════════════════════════════════
+   MATH SYMBOL BACKGROUND
+══════════════════════════════════════════════════ */
+(function() {
+  const syms = ['sinθ','cosθ','tanθ','θ','π','2π','∞','∑','∫','√3/2','Δ','α','β','ω','⊥','∠','φ','2R','sec','csc','cot'];
+  const bg = document.getElementById('math-bg');
+  for (let i = 0; i < 85; i++) {
+    const s = UI.el('span', 'ms', bg, syms[i % syms.length]);
+    s.style.cssText = `left:${M.random()*100}%;top:${M.random()*100}%;
+      font-size:${9+M.random()*16}px;opacity:${(0.04+M.random()*0.035).toFixed(3)};
+      transform:rotate(${M.random()*50-25}deg)`;
+  }
+})();
+
+/* ══════════════════════════════════════════════════
+   HOME MODULE CARDS
+══════════════════════════════════════════════════ */
+const MC_INFO = [
+  { n:'01', t:'Oscilloscope Wave', d:'Conveyor-belt model: unit circle rotating radius vector unrolls into a live scrolling waveform.' },
+  { n:'02', t:'Standard Angle Proof', d:'Geometric dissection of 30°, 45°, 60° from equilateral and isosceles right triangles.' },
+  { n:'03', t:'Co-Function Flipper', d:'Click angle A or C: sides re-label instantly proving sin A = cos(90°−A).' },
+  { n:'04', t:'sin²θ + cos²θ = 1', d:'Literal geometric squares on each triangle leg — area sum always equals 1.' },
+  { n:'05', t:'Two-Point Elevation', d:'Surveyor model: two elevation angles from two ground points to compute inaccessible height.' },
+  { n:'06', t:'Sun & Shadow Simulator', d:'Move the Sun across the sky (15°–80°) to see how tan θ = h / s determines ground shadow length.' },
+  { n:'07', t:'4-Quadrant ASTC', d:'All, Sine, Tan, Cos sign rules on a full 360° unit circle with live coordinates.' },
+  { n:'08', t:'Even / Odd Functions', d:'Simultaneous ±θ vectors proving cos(−θ)=cosθ (even) and sin(−θ)=−sinθ (odd).' },
+  { n:'09', t:'Radian Measure (l = rθ)', d:'Bridge Degrees to Radians: see why 1 Radian ≈ 57.3° when arc length l equals radius r, with an unrolled ruler.' },
+  { n:'10', t:'Compound Angles (A + B)', d:'Visual proof of why sin(A+B) ≠ sinA + sinB, plus how to compute sin 75° using 45° + 30°.' },
+  { n:'11', t:'Trigo:AI Vision Doubt Solver', d:'Groq-powered multimodal chatbot: upload photos of handwritten or textbook trig problems for instant step-by-step solutions.' }
+];
+(function() {
+  const g = document.getElementById('mg');
+  MC_INFO.forEach((m, i) => {
+    const c = UI.el('div', 'mc', g);
+    c.innerHTML = `<div class="mc-n">${m.n}</div><h3>${m.t}</h3><p>${m.d}</p>`;
+    c.onclick = () => showView('v' + (i + 1));
   });
-  window.addEventListener('mouseup',()=>{dragging=false});
+})();
 
-  Nav.onShow['mod-1']=()=>draw();
-  draw();
-}
+/* ══════════════════════════════════════════════════
+   MODULE 1 · Continuous Oscilloscope Wave
+══════════════════════════════════════════════════ */
+function initM1() {
+  const body = document.getElementById('b1');
+  const { canvas: circC } = UI.canvas(body, 'c1a');
+  const { canvas: waveC } = UI.canvas(body, 'c1b');
+  const cp = UI.el('div', 'cp', body);
 
-/* ═══════════════════════════════════════════
-   MODULE 2 — Dual-Mode Values Calculator
-   ═══════════════════════════════════════════ */
-function initMod2(){
-  const body=document.getElementById('mod-2-body');
-  const mainPanel=UI.el('div','controls-panel',body);
-  mainPanel.style.flex='1 1 100%';mainPanel.style.maxWidth='100%';
+  let playing = false, theta = 0, omega = 1.2, mode = 0; // 0=sin,1=cos,2=dual
+  const wave = []; const MAX_PTS = 700;
 
-  // Mode tabs
-  const tabs=UI.el('div','mode-tabs',mainPanel);
-  const tabA=UI.el('div','mode-tab active',tabs,'Mode A: Exact Decimal');
-  const tabB=UI.el('div','mode-tab',tabs,'Mode B: Symbolic / Surd');
-
-  const panelA=UI.el('div','submode-panel active',mainPanel);
-  const panelB=UI.el('div','submode-panel',mainPanel);
-
-  tabA.onclick=()=>{tabA.classList.add('active');tabB.classList.remove('active');panelA.classList.add('active');panelB.classList.remove('active')};
-  tabB.onclick=()=>{tabB.classList.add('active');tabA.classList.remove('active');panelB.classList.add('active');panelA.classList.remove('active')};
-
-  // ── Mode A: Decimal ──
-  const rowA=UI.el('div','ctrl-row',panelA);
-  const inpA=UI.el('input','',rowA);inpA.type='number';inpA.value=45;inpA.step='any';
-  inpA.style.cssText='background:var(--bg2);border:1px solid var(--bdr);color:var(--tx);padding:6px 10px;border-radius:6px;font-family:var(--mono);width:120px;font-size:0.85rem';
-  let unitDeg=true;
-  const unitPills=UI.pills(rowA,['Degrees','Radians'],(i)=>{unitDeg=i===0;computeA()},0);
-  const computeBtn=UI.btn(rowA,'Compute',()=>computeA(),'rainbow-btn');
-
-  const tableA=UI.el('table','val-table',panelA);
-  tableA.innerHTML='<thead><tr><th>Function</th><th>Value</th></tr></thead><tbody id="tblA-body"></tbody>';
-  const tbA=document.getElementById('tblA-body');
-
-  function computeA(){
-    let v=+inpA.value;
-    const rad=unitDeg?MathE.toRad(v):v;
-    const s=M.sin(rad),c=M.cos(rad),t=M.tan(rad);
-    const sc=1/s,se=1/c,co=1/t;
-    const fns=[['sin θ',s],['cos θ',c],['tan θ',t],['csc θ',sc],['sec θ',se],['cot θ',co]];
-    tbA.innerHTML=fns.map(f=>'<tr><td>'+f[0]+'</td><td>'+MathE.fmtN(f[1],6)+'</td></tr>').join('');
-  }
-  computeA();
-  inpA.addEventListener('keydown',e=>{if(e.key==='Enter')computeA()});
-
-  // ── Mode B: Symbolic ──
-  UI.el('label','',panelB,'Select Standard Angle');
-  let selAngle=45;
-  UI.pills(panelB,EXACT_ANGLES.map(a=>a+'°'),(i)=>{selAngle=EXACT_ANGLES[i];computeB()},3);
-
-  const tableB=UI.el('table','val-table',panelB);
-  tableB.innerHTML='<thead><tr><th>Function</th><th>Exact Value</th></tr></thead><tbody id="tblB-body"></tbody>';
-  const tbB=document.getElementById('tblB-body');
-
-  const eulerBox=UI.el('div','euler-box',panelB);
-
-  function computeB(){
-    const ex=EXACT[selAngle];if(!ex)return;
-    const fns=[['sin θ',ex.sin],['cos θ',ex.cos],['tan θ',ex.tan],['csc θ',ex.csc],['sec θ',ex.sec],['cot θ',ex.cot]];
-    tbB.innerHTML=fns.map(f=>'<tr><td>'+f[0]+'</td><td>'+f[1]+'</td></tr>').join('');
-    eulerBox.innerHTML=eulerHTML(selAngle);
-  }
-  computeB();
-
-  Nav.onShow['mod-2']=()=>{};
-}
-
-/* ═══════════════════════════════════════════
-   MODULE 3 — Unit Circle to Waveform Animator
-   ═══════════════════════════════════════════ */
-function initMod3(){
-  const body=document.getElementById('mod-3-body');
-  const {wrap,canvas}=UI.canvas(body,'wave-canvas');
-  const cp=UI.el('div','controls-panel',body);
-
-  let playing=false,theta=0,omega=1.5,waveMode=0; // 0=sin,1=cos,2=dual
-  const history={sin:[],cos:[]};
-
-  UI.el('label','',cp,'Wave Mode');
-  UI.pills(cp,['sin θ','cos θ','Dual'],(i)=>{waveMode=i},-1);
+  UI.el('label', 'cl', cp, 'Wave Mode');
+  UI.pills(cp, ['sin θ', 'cos θ', 'Dual'], i => { mode = i; drawCirc(); drawWave(); }, 0);
 
   UI.sep(cp);
-  const speedS=UI.slider(cp,'Angular Speed ω',0.5,5,0.1,omega,v=>{omega=v});
+  UI.slider(cp, 'Speed ω', 0.3, 5, 0.1, omega, v => { omega = v; });
 
   UI.sep(cp);
-  const btnRow=UI.el('div','ctrl-row',cp);
-  const playBtn=UI.btn(btnRow,'▶ Play',()=>{playing=!playing;playBtn.textContent=playing?'⏸ Pause':'▶ Play';if(playing)Anim.start('mod3')},'rainbow-btn');
-  UI.btn(btnRow,'⟲ Reset',()=>{theta=0;history.sin=[];history.cos=[];playing=false;playBtn.textContent='▶ Play';Anim.stop('mod3');drawWave()});
+  const cr = UI.el('div', 'cr', cp);
+  const playBtn = UI.btn(cr, '▶ Play', () => {
+    playing = !playing;
+    playBtn.textContent = playing ? '⏸ Pause' : '▶ Play';
+    if (playing) Anim.start('m1');
+    else Anim.stop('m1');
+  }, 'rb');
+  UI.btn(cr, '⟲ Reset', () => {
+    playing = false; playBtn.textContent = '▶ Play';
+    theta = 0; wave.length = 0; Anim.stop('m1');
+    drawCirc(); drawWave();
+  });
 
   UI.sep(cp);
-  const bRow=UI.el('div','badge-row',cp);
-  const bTheta=UI.badge(bRow,'θ','0°');
-  const bSin=UI.badge(bRow,'sin','0');
-  const bCos=UI.badge(bRow,'cos','1');
+  const br = UI.el('div', 'br', cp);
+  const bTheta = UI.badge(br, 'θ', '0.0°');
+  const bSin   = UI.badge(br, 'sin θ', '0.0000');
+  const bCos   = UI.badge(br, 'cos θ', '1.0000');
 
-  function drawWave(ts){
-    const{ctx,w,h}=CK.setup(canvas);CK.clear(ctx,w,h);
+  UI.sep(cp);
+  UI.el('div', 'eb', cp, 'The waveform scrolls like a cardiac monitor.\nAs θ increases, sin θ traces on top,\ncos θ traces in green below.');
 
-    // Layout: circle on left 30%, wave on right 70%
-    const circR=M.min(w*0.25,h*0.4)*0.8;
-    const ccx=w*0.18,ccy=h*0.5;
-    const waveL=w*0.35,waveR=w*0.95,waveY=h*0.5;
-    const waveW=waveR-waveL;
+  function drawCirc() {
+    const rad = theta;
+    const s = M.sin(rad), c = M.cos(rad);
+    const deg = (theta * R2D % 360 + 360) % 360;
+    bTheta.set(deg.toFixed(1) + '°');
+    bSin.set(fmt(s)); bCos.set(fmt(c));
 
-    // Grid
-    CK.grid(ctx,ccx,ccy,w,h,circR/2);
+    const { x, w, h } = CK.setup(circC);
+    if (w <= 0 || h <= 0) return;
+    CK.clr(x, w, h);
+    const cx = w * .5, cy = h * .5, R = M.min(w, h) * .38;
+    CK.grid(x, cx, cy, w, h, R / 3);
+    CK.axes(x, cx, cy, w, h);
+    CK.circ(x, cx, cy, R, 'rgba(59,130,246,0.35)', 1.5);
 
-    // Circle
-    CK.circle(ctx,ccx,ccy,circR,'rgba(59,130,246,0.35)',1.5);
-    CK.axes(ctx,ccx,ccy,w*0.36,h);
+    CK.txt(x, '0°', cx + R + 16, cy, '#4A7FA8', '10px JetBrains Mono,monospace');
+    CK.txt(x, '90°', cx, cy - R - 12, '#4A7FA8', '10px JetBrains Mono,monospace');
 
-    const sinV=M.sin(theta),cosV=M.cos(theta);
-    const px=ccx+circR*M.cos(theta),py=ccy-circR*M.sin(theta);
+    const px = cx + R * c, py = cy - R * s;
 
-    // Radius
-    CK.line(ctx,ccx,ccy,px,py,'#3B82F6',2);
-    CK.dot(ctx,px,py,5,'#06B6D4');
+    // Radius vector
+    CK.arr(x, cx, cy, px, py, '#3B82F6', 2.5);
 
     // Projections
-    if(waveMode===0||waveMode===2){
-      CK.line(ctx,px,ccy,px,py,'#EF4444',2);// sin
+    if (mode === 0 || mode === 2) {
+      CK.ln(x, px, py, px, cy, '#EF4444', 2, [4, 4]); // sin vertical
+      CK.ln(x, px, py, cx + R + 40, py, '#06B6D4', 1.2, [5, 4]); // laser right
     }
-    if(waveMode===1||waveMode===2){
-      CK.line(ctx,ccx,ccy,px,ccy,'#22C55E',2);// cos
-    }
-
-    // Connecting laser line
-    const connY=waveMode===1?ccy-circR*cosV:py;
-    CK.line(ctx,px,connY,waveL,connY,'#06B6D4',1,[4,4]);
-
-    // Wave axes
-    CK.line(ctx,waveL,waveY,waveR,waveY,'rgba(186,230,253,0.12)',1);
-    CK.line(ctx,waveL,waveY-circR,waveL,waveY+circR,'rgba(186,230,253,0.08)',1);
-
-    // Tick marks for π
-    for(let i=1;i<=4;i++){
-      const tx=waveL+(waveW*i*PI)/(4*PI);
-      CK.line(ctx,tx,waveY-4,tx,waveY+4,'rgba(186,230,253,0.15)',1);
-      CK.text(ctx,i+'π',tx,waveY+14,'#64748B','10px JetBrains Mono,monospace');
+    if (mode === 1 || mode === 2) {
+      CK.ln(x, cx, cy, px, cy, '#22C55E', 2, [4, 4]); // cos horizontal
     }
 
-    // Draw wave(s) from history
-    const maxPts=M.floor(waveW);
-    function drawWaveLine(arr,color){
-      if(arr.length<2)return;
-      ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2;
-      const step=waveW/((4*PI)/(omega*0.016));
-      for(let i=0;i<arr.length&&i<maxPts;i++){
-        const x=waveL+i*(waveW/arr.length);
-        const y=waveY-arr[i]*circR;
-        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-      }
-      ctx.stroke();
-    }
-
-    if(waveMode===0||waveMode===2)drawWaveLine(history.sin,'#EF4444');
-    if(waveMode===1||waveMode===2)drawWaveLine(history.cos,'#22C55E');
-
-    // Current value dot on wave
-    if(history.sin.length>0){
-      const lastX=waveL+(history.sin.length-1)*(waveW/M.max(history.sin.length,1));
-      if(waveMode===0||waveMode===2){
-        const ly=waveY-sinV*circR;
-        CK.dot(ctx,M.min(lastX,waveR),ly,4,'#EF4444');
-      }
-      if(waveMode===1||waveMode===2){
-        const ly=waveY-cosV*circR;
-        CK.dot(ctx,M.min(lastX,waveR),ly,4,'#22C55E');
-      }
-    }
-
-    // Badges
-    bTheta.update(MathE.toDeg(theta).toFixed(1)+'°');
-    bSin.update(sinV.toFixed(4));bCos.update(cosV.toFixed(4));
-
-    // Labels
-    CK.text(ctx,'Unit Circle',ccx,ccy-circR-16,'#64748B','11px Inter,sans-serif');
-    CK.text(ctx,'Wave (0 to 4π)',waveL+(waveR-waveL)/2,h*0.07,'#64748B','11px Inter,sans-serif');
+    CK.dot(x, px, py, 6, '#06B6D4');
+    CK.dot(x, px, py, 3, '#fff');
   }
 
-  const maxHistLen=600;
-  Anim.register('mod3',()=>{
-    if(!playing)return;
-    theta+=omega*0.025;
-    history.sin.push(M.sin(theta));
-    history.cos.push(M.cos(theta));
-    if(history.sin.length>maxHistLen){history.sin.shift();history.cos.shift();}
-    if(theta>=4*PI){theta=0;history.sin=[];history.cos=[];}
-    drawWave();
+  function drawWave() {
+    const { x, w, h } = CK.setup(waveC);
+    if (w <= 0 || h <= 0) return;
+    CK.clr(x, w, h);
+    const oy = h * .5, amp = h * .36;
+
+    CK.grid(x, 0, oy, w, h, 50);
+    CK.axes(x, 0, oy, w, h);
+    CK.ln(x, 0, oy - amp, w, oy - amp, 'rgba(255,100,100,0.08)', 1, [4, 4]);
+    CK.ln(x, 0, oy + amp, w, oy + amp, 'rgba(255,100,100,0.08)', 1, [4, 4]);
+
+    const xStep = w / MAX_PTS;
+
+    function drawTrace(arr, col) {
+      if (arr.length < 2) return;
+      x.beginPath(); x.strokeStyle = col; x.lineWidth = 2.2;
+      for (let i = 0; i < arr.length; i++) {
+        const px2 = w - i * xStep;
+        const py2 = oy - arr[i] * amp;
+        i === 0 ? x.moveTo(px2, py2) : x.lineTo(px2, py2);
+      }
+      x.stroke();
+    }
+
+    if (mode === 0 || mode === 2) drawTrace(wave.map(p => p.s), '#EF4444');
+    if (mode === 1 || mode === 2) drawTrace(wave.map(p => p.c), '#22C55E');
+
+    if (wave.length > 0) {
+      const pt = wave[0];
+      if (mode === 0 || mode === 2) CK.dot(x, w - 4, oy - pt.s * amp, 5, '#EF4444');
+      if (mode === 1 || mode === 2) CK.dot(x, w - 4, oy - pt.c * amp, 5, '#22C55E');
+    }
+
+    CK.txt(x, 'Waveform (scrolling →)', w / 2, 18, '#4A7FA8', '11px Inter,sans-serif');
+  }
+
+  Anim.reg('m1', () => {
+    theta += omega * 0.022;
+    wave.unshift({ s: M.sin(theta), c: M.cos(theta) });
+    if (wave.length > MAX_PTS) wave.pop();
+    drawCirc(); drawWave();
   });
 
-  Nav.onShow['mod-3']=()=>drawWave();
-  drawWave();
+  onShow['v1'] = () => {
+    playBtn.textContent = playing ? '⏸ Pause' : '▶ Play';
+    drawCirc(); drawWave();
+    if (playing) Anim.start('m1');
+  };
 }
 
+/* ══════════════════════════════════════════════════
+   MODULE 2 · Geometric Dissection of Standard Angles
+══════════════════════════════════════════════════ */
+function initM2() {
+  const body = document.getElementById('b2');
+  const { canvas } = UI.canvas(body, 'c2');
+  const cp = UI.el('div', 'cp', body);
 
+  let mode = 0; // 0=45°, 1=30/60
+  let subAngle = 0;
 
-/* ═══════════════════════════════════════════
-   MODULE 4 — Dynamic Right-Triangle Solver
-   ═══════════════════════════════════════════ */
-function initMod4(){
-  const body=document.getElementById('mod-4-body');
-  const{wrap,canvas}=UI.canvas(body,'tri-canvas');
-  const cp=UI.el('div','controls-panel',body);
-
-  let base=4,alt=3,highlightSide='';
-
-  const sBase=UI.slider(cp,'Base (b)',1,12,0.1,base,v=>{base=v;calc()});
-  const sAlt=UI.slider(cp,'Altitude (a)',1,12,0.1,alt,v=>{alt=v;calc()});
-
-  UI.sep(cp);
-  const bRow1=UI.el('div','badge-row',cp);
-  const bHyp=UI.badge(bRow1,'Hypotenuse','—');
-  const bAngle=UI.badge(bRow1,'θ','—');
-  const bComp=UI.badge(bRow1,'90°−θ','—');
-  const bArea=UI.badge(bRow1,'Area','—');
+  UI.el('label', 'cl', cp, 'Geometric Construction');
+  UI.pills(cp, ['45° (Isosceles △)', '30° & 60° (Equilateral △)'], i => { mode = i; draw(); }, 0);
 
   UI.sep(cp);
-  UI.el('label','',cp,'Trigonometric Ratios (hover to highlight)');
-  const chipBox=UI.el('div','ctrl-row',cp);
-  const chips=[];
-  ['sin','cos','tan','csc','sec','cot'].forEach(name=>{
-    const ch=UI.el('div','ratio-chip',chipBox,'<span class="rc-name">'+name+'</span> <span class="rc-val readout">—</span>');
-    ch.dataset.name=name;
-    ch.onmouseenter=()=>{highlightSide=name;draw()};
-    ch.onmouseleave=()=>{highlightSide='';draw()};
-    chips.push(ch);
-  });
+  const br = UI.el('div', 'br', cp);
+  const bA = UI.badge(br, 'Angle', '45°');
+  const bS = UI.badge(br, 'sin', '1/√2');
+  const bC = UI.badge(br, 'cos', '1/√2');
 
-  function calc(){
-    const hyp=M.sqrt(base*base+alt*alt);
-    const theta=MathE.toDeg(M.atan2(alt,base));
-    const comp=90-theta;
-    const area=0.5*base*alt;
-    bHyp.update(hyp.toFixed(3));
-    bAngle.update(theta.toFixed(2)+'°');
-    bComp.update(comp.toFixed(2)+'°');
-    bArea.update(area.toFixed(2));
+  UI.sep(cp);
+  const infoBox = UI.el('div', 'eb', cp);
 
-    const sinV=alt/hyp,cosV=base/hyp,tanV=alt/base;
-    const vals={sin:sinV,cos:cosV,tan:tanV,csc:1/sinV,sec:1/cosV,cot:1/tanV};
-    chips.forEach(ch=>{
-      ch.querySelector('.rc-val').textContent=MathE.fmtN(vals[ch.dataset.name],4);
-    });
-    draw();
+  UI.el('label', 'cl', cp, 'Sub-Angle (for 30°/60° mode)');
+  UI.pills(cp, ['30°', '60°'], i => { subAngle = i; draw(); }, 0);
+
+  function draw() {
+    if (mode === 0) {
+      bA.set('45°'); bS.set('1/√2 ≈ ' + fmt(M.SQRT1_2)); bC.set('1/√2 ≈ ' + fmt(M.SQRT1_2));
+      infoBox.innerHTML = '<strong>Isosceles Right Triangle</strong><br>Legs = 1, Hypotenuse = √(1²+1²) = √2<br>sin 45° = opp/hyp = 1/√2<br>cos 45° = adj/hyp = 1/√2';
+    } else if (subAngle === 0) {
+      bA.set('30°'); bS.set('0.5000'); bC.set('0.8660');
+      infoBox.innerHTML = '<strong>Equilateral △ side=2</strong>, altitude dropped<br>Creates 30-60-90 △ with sides 1, √3, 2<br>sin 30° = opp/hyp = 1/2<br>cos 30° = adj/hyp = √3/2<br>Altitude = √(2²−1²) = √3';
+    } else {
+      bA.set('60°'); bS.set('0.8660'); bC.set('0.5000');
+      infoBox.innerHTML = '<strong>Equilateral △ side=2</strong>, altitude dropped<br>Creates 30-60-90 △ with sides 1, √3, 2<br>sin 60° = opp/hyp = √3/2<br>cos 60° = adj/hyp = 1/2<br>Altitude = √3 ≈ 1.732';
+    }
+
+    const { x, w, h } = CK.setup(canvas);
+    if (w <= 0 || h <= 0) return;
+    CK.clr(x, w, h);
+    CK.grid(x, 0, 0, w, h, 50);
+
+    if (mode === 0) draw45(x, w, h);
+    else draw3060(x, w, h);
   }
 
-  function draw(){
-    const{ctx,w,h}=CK.setup(canvas);CK.clear(ctx,w,h);
-    const pad=60;
-    const maxDim=M.max(base,alt);
-    const scale=M.min((w-2*pad)/base,(h-2*pad)/alt)*0.85;
-    const bx=pad,by=h-pad;
-    const bw=base*scale,bh=alt*scale;
-    const Ax=bx,Ay=by; // bottom-left (right angle)
-    const Bx=bx+bw,By=by; // bottom-right
-    const Cx=bx,Cy=by-bh; // top-left
+  function draw45(x, w, h) {
+    const pad = 80, side = M.min(w - 2*pad, h - 2*pad) * 0.72;
+    const Ax = w/2 - side/2, Ay = h * .76;
+    const Bx = Ax + side, By = Ay;
+    const Cx = Ax, Cy = Ay - side;
 
-    // Highlight logic
-    const hBase=['cos','sec','tan'].includes(highlightSide);
-    const hAlt=['sin','csc','cot'].includes(highlightSide);
-    const hHyp=['sin','cos','csc','sec'].includes(highlightSide);
+    x.beginPath(); x.moveTo(Ax,Ay); x.lineTo(Bx,By); x.lineTo(Cx,Cy); x.closePath();
+    x.fillStyle = 'rgba(59,130,246,0.07)'; x.fill();
 
-    // Grid
-    CK.grid(ctx,0,0,w,h,40);
+    CK.ln(x, Ax, Ay, Bx, By, '#22C55E', 2.2);
+    CK.ln(x, Ax, Ay, Cx, Cy, '#EF4444', 2.2);
+    CK.ln(x, Bx, By, Cx, Cy, '#3B82F6', 2.5);
 
-    // Triangle fill
-    ctx.beginPath();ctx.moveTo(Ax,Ay);ctx.lineTo(Bx,By);ctx.lineTo(Cx,Cy);ctx.closePath();
-    ctx.fillStyle='rgba(59,130,246,0.05)';ctx.fill();
+    const m = 12;
+    x.beginPath(); x.moveTo(Ax+m,Ay); x.lineTo(Ax+m,Ay-m); x.lineTo(Ax,Ay-m);
+    x.strokeStyle='#64748B'; x.lineWidth=1; x.stroke();
 
-    // Sides
-    CK.line(ctx,Ax,Ay,Bx,By,hBase?'#F59E0B':'#3B82F6',hBase?3:2); // base
-    CK.line(ctx,Ax,Ay,Cx,Cy,hAlt?'#F59E0B':'#EF4444',hAlt?3:2); // alt
-    CK.line(ctx,Bx,By,Cx,Cy,hHyp?'#F59E0B':'#22C55E',hHyp?3:2); // hyp
+    CK.arc(x, Bx, By, 26, M.PI, M.PI + D2R*45, '#06B6D4', 1.5, false);
 
-    // Right angle marker
-    const m=12;
-    ctx.beginPath();ctx.moveTo(Ax+m,Ay);ctx.lineTo(Ax+m,Ay-m);ctx.lineTo(Ax,Ay-m);
-    ctx.strokeStyle='#64748B';ctx.lineWidth=1;ctx.stroke();
+    CK.txt(x, '1', (Ax+Bx)/2, Ay+20, '#22C55E', '14px JetBrains Mono,monospace');
+    CK.txt(x, '1', Ax-24, (Ay+Cy)/2, '#EF4444', '14px JetBrains Mono,monospace');
+    CK.txt(x, '√2', (Bx+Cx)/2+18, (By+Cy)/2, '#3B82F6', '14px JetBrains Mono,monospace');
+    CK.txt(x, '45°', Bx-42, By-18, '#06B6D4', '12px JetBrains Mono,monospace');
+    CK.txt(x, '45°', Cx+24, Cy+34, '#06B6D4', '11px JetBrains Mono,monospace');
 
-    // Angle arc at B
-    const angRad=M.atan2(alt,base);
-    ctx.beginPath();ctx.arc(Bx,By,28,PI,PI+angRad,false);ctx.strokeStyle='#06B6D4';ctx.lineWidth=1.5;ctx.stroke();
-    CK.text(ctx,'θ',Bx-38,By-14,'#06B6D4','13px JetBrains Mono,monospace');
-
-    // Labels
-    CK.text(ctx,'b = '+base.toFixed(1),(Ax+Bx)/2,Ay+22,'#3B82F6','12px JetBrains Mono,monospace');
-    CK.text(ctx,'a = '+alt.toFixed(1),Ax-28,(Ay+Cy)/2,'#EF4444','12px JetBrains Mono,monospace');
-    const hyp=M.sqrt(base*base+alt*alt);
-    CK.text(ctx,'c = '+hyp.toFixed(2),(Bx+Cx)/2+20,(By+Cy)/2,'#22C55E','12px JetBrains Mono,monospace');
-
-    // SOH-CAH-TOA reminder
-    CK.text(ctx,'SOH-CAH-TOA',w/2,28,'#64748B','12px Inter,sans-serif');
+    CK.txt(x, 'sin 45° = 1/√2 ≈ 0.7071', w/2, h*.10, '#BAE6FD', '15px JetBrains Mono,monospace');
+    CK.txt(x, 'cos 45° = 1/√2 ≈ 0.7071', w/2, h*.10+24, '#BAE6FD', '15px JetBrains Mono,monospace');
+    CK.txt(x, 'tan 45° = 1/1 = 1', w/2, h*.10+48, '#38D9F5', '15px JetBrains Mono,monospace');
   }
 
-  calc();
-  Nav.onShow['mod-4']=()=>calc();
+  function draw3060(x, w, h) {
+    const pad = 70;
+    const sc = M.min(w - 2*pad, h - 2*pad) * 0.38;
+    const Ax = w/2, Ay = h * .80;
+    const Bx = Ax - sc, By = Ay;
+    const Cx2 = Ax + sc, Cy2 = Ay;
+    const Dx = Ax, Dy = Ay - sc * M.sqrt(3);
+
+    x.beginPath(); x.moveTo(Bx,By); x.lineTo(Cx2,Cy2); x.lineTo(Dx,Dy); x.closePath();
+    x.fillStyle = 'rgba(59,130,246,0.06)'; x.fill();
+
+    CK.ln(x, Bx, By, Cx2, Cy2, '#64748B', 1.5);
+    CK.ln(x, Bx, By, Dx, Dy, '#3B82F6', 2.5);
+    CK.ln(x, Cx2, Cy2, Dx, Dy, '#3B82F6', 2.5);
+    CK.ln(x, Ax, Ay, Dx, Dy, '#EF4444', 2.5);
+    CK.ln(x, Bx, By, Ax, Ay, '#22C55E', 2.5);
+    if (subAngle === 1) CK.ln(x, Cx2, Cy2, Ax, Ay, '#22C55E', 2.5);
+
+    const m = 10;
+    x.beginPath(); x.moveTo(Ax+m,Ay); x.lineTo(Ax+m,Ay-m); x.lineTo(Ax,Ay-m);
+    x.strokeStyle='#64748B'; x.lineWidth=1; x.stroke();
+
+    CK.txt(x, 'Side = 2', (Bx+Dx)/2-28, (By+Dy)/2, '#3B82F6', '12px JetBrains Mono,monospace');
+    CK.txt(x, 'Side = 2', (Cx2+Dx)/2+28, (Cy2+Dy)/2, '#3B82F6', '12px JetBrains Mono,monospace');
+    CK.txt(x, '√3', Ax + 16, (Ay+Dy)/2, '#EF4444', '13px JetBrains Mono,monospace');
+    CK.txt(x, '1', (Bx+Ax)/2, Ay+18, '#22C55E', '13px JetBrains Mono,monospace');
+    CK.txt(x, '1', (Cx2+Ax)/2, Ay+18, '#22C55E', '13px JetBrains Mono,monospace');
+
+    [Bx,By,Cx2,Cy2,Dx,Dy,Ax,Ay].forEach((v,i,a)=>{if(i%2===0)CK.dot(x,v,a[i+1],4,'#06B6D4');});
+
+    if (subAngle === 0) {
+      CK.arc(x, Bx, By, 28, -D2R*60, 0, '#06B6D4', 1.8);
+      CK.txt(x, '60°', Bx+38, By-14, '#06B6D4', '12px JetBrains Mono,monospace');
+      CK.txt(x, '30°', Dx-14, Dy+34, '#06B6D4', '11px JetBrains Mono,monospace');
+      CK.txt(x, 'sin 30° = 1/2 = 0.5', w/2, h*.1, '#BAE6FD', '14px JetBrains Mono,monospace');
+      CK.txt(x, 'cos 30° = √3/2 ≈ 0.866', w/2, h*.1+22, '#38D9F5', '14px JetBrains Mono,monospace');
+      CK.txt(x, 'tan 30° = 1/√3 ≈ 0.577', w/2, h*.1+44, '#88BFEA', '13px JetBrains Mono,monospace');
+    } else {
+      CK.arc(x, Cx2, Cy2, 28, M.PI, M.PI+D2R*60, '#F59E0B', 1.8, false);
+      CK.txt(x, '60°', Cx2-44, Cy2-14, '#F59E0B', '12px JetBrains Mono,monospace');
+      CK.txt(x, 'sin 60° = √3/2 ≈ 0.866', w/2, h*.1, '#BAE6FD', '14px JetBrains Mono,monospace');
+      CK.txt(x, 'cos 60° = 1/2 = 0.5', w/2, h*.1+22, '#38D9F5', '14px JetBrains Mono,monospace');
+      CK.txt(x, 'tan 60° = √3 ≈ 1.732', w/2, h*.1+44, '#88BFEA', '13px JetBrains Mono,monospace');
+    }
+  }
+
+  onShow['v2'] = draw;
 }
 
-/* ═══════════════════════════════════════════
-   MODULE 5 — Wave Transformation Sandbox
-   ═══════════════════════════════════════════ */
-function initMod5(){
-  const body=document.getElementById('mod-5-body');
-  const{wrap,canvas}=UI.canvas(body,'wavex-canvas');
-  const cp=UI.el('div','controls-panel',body);
+/* ══════════════════════════════════════════════════
+   MODULE 3 · Co-Function & Complementary Angle Flipper
+══════════════════════════════════════════════════ */
+function initM3() {
+  const body = document.getElementById('b3');
+  const { canvas } = UI.canvas(body, 'c3');
+  const cp = UI.el('div', 'cp', body);
 
-  let A=1,B=1,C=0,D=0;
+  let angleA = 35, selAngle = 'A';
 
-  const sA=UI.slider(cp,'Amplitude A',0.1,5,0.1,A,v=>{A=v;draw()});
-  const sB=UI.slider(cp,'Frequency B',0.1,5,0.1,B,v=>{B=v;draw()});
-  const sC=UI.slider(cp,'Phase Shift C',-3.14,3.14,0.1,C,v=>{C=v;draw()});
-  const sD=UI.slider(cp,'Vertical Shift D',-3,3,0.1,D,v=>{D=v;draw()});
+  UI.slider(cp, 'Angle A (°)', 10, 80, 1, angleA, v => { angleA = v; draw(); });
 
   UI.sep(cp);
-  const bRow=UI.el('div','badge-row',cp);
-  const bPer=UI.badge(bRow,'Period T','—');
-  const bMax=UI.badge(bRow,'Max','—');
-  const bMin=UI.badge(bRow,'Min','—');
-  const bMid=UI.badge(bRow,'Midline','—');
+  UI.el('label', 'cl', cp, 'Active Angle');
+  UI.pills(cp, ['Angle A (bottom-right)', 'Angle C (top)'], i => {
+    selAngle = i === 0 ? 'A' : 'C'; draw();
+  }, 0);
 
   UI.sep(cp);
-  const resetBtn=UI.btn(cp,'Reset Parameters',()=>{A=1;B=1;C=0;D=0;sA.set(1);sB.set(1);sC.set(0);sD.set(0)},'rainbow-btn');
+  const br = UI.el('div', 'br', cp);
+  const bSel = UI.badge(br, 'θ', '35°');
+  const bSin = UI.badge(br, 'sin', '—');
+  const bCos = UI.badge(br, 'cos', '—');
+  const bTan = UI.badge(br, 'tan', '—');
 
-  // Equation display
-  const eqBox=UI.el('div','euler-box',cp);
+  UI.sep(cp);
+  const proofBox = UI.el('div', 'eb', cp);
 
-  function draw(){
-    const{ctx,w,h}=CK.setup(canvas);CK.clear(ctx,w,h);
-    const pad=50;
-    const gw=w-2*pad,gh=h-2*pad;
-    const ox=pad,oy=h/2;
-    const xScale=gw/(4*PI),yScale=gh/(12); // enough room for A up to 5 + D
+  function draw() {
+    const angA = angleA, angC = 90 - angleA;
+    const activeAng = selAngle === 'A' ? angA : angC;
+    const sinV = M.sin(activeAng * D2R), cosV = M.cos(activeAng * D2R), tanV = M.tan(activeAng * D2R);
+    bSel.set(activeAng + '°');
+    bSin.set(fmt(sinV)); bCos.set(fmt(cosV)); bTan.set(fmt(tanV));
 
-    CK.grid(ctx,ox,oy,w,h,xScale*PI/2);
-    CK.axes(ctx,ox,oy,w,h,'rgba(186,230,253,0.18)');
+    proofBox.innerHTML = `<strong>Co-Function Identity</strong><br>
+      sin(A) = cos(90°−A)<br>
+      tan(A) = cot(90°−A)<br>
+      sec(A) = csc(90°−A)<br><br>
+      Active angle: <span style="color:var(--cyan)">${activeAng}°</span>`;
 
-    // X-axis labels
-    for(let i=0;i<=4;i++){
-      const x=ox+i*PI*xScale;
-      CK.line(ctx,x,oy-3,x,oy+3,'#64748B',1);
-      CK.text(ctx,i===0?'0':i+'π',x,oy+16,'#64748B','10px JetBrains Mono,monospace');
-    }
+    const { x, w, h } = CK.setup(canvas);
+    if (w <= 0 || h <= 0) return;
+    CK.clr(x, w, h);
+    CK.grid(x, 0, 0, w, h, 50);
 
-    // Reference sin(x)
-    ctx.beginPath();ctx.strokeStyle='rgba(59,130,246,0.2)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
-    for(let px=0;px<=gw;px++){
-      const x=px/xScale;
-      const y=M.sin(x);
-      const sx=ox+px,sy=oy-y*yScale;
-      px===0?ctx.moveTo(sx,sy):ctx.lineTo(sx,sy);
-    }
-    ctx.stroke();ctx.setLineDash([]);
+    const radA = angA * D2R;
+    const pad = 70;
+    const maxB = w - 2 * pad, maxH = h - 2 * pad;
+    const hyp = M.min(maxB / M.cos(radA), maxH / M.sin(radA)) * 0.68;
+    const base = hyp * M.cos(radA);
+    const alt  = hyp * M.sin(radA);
 
-    // Transformed wave y = A*sin(Bx - C) + D
-    ctx.beginPath();ctx.strokeStyle='#06B6D4';ctx.lineWidth=2.5;
-    for(let px=0;px<=gw;px++){
-      const x=px/xScale;
-      const y=A*M.sin(B*x-C)+D;
-      const sx=ox+px,sy=oy-y*yScale;
-      px===0?ctx.moveTo(sx,sy):ctx.lineTo(sx,sy);
-    }
-    ctx.stroke();
+    const Ax = w * .22, Ay = h * .82;
+    const Bx = Ax + base, By = Ay;
+    const Cx2 = Ax, Cy2 = Ay - alt;
 
-    // Midline
-    const midY=oy-D*yScale;
-    CK.line(ctx,ox,midY,ox+gw,midY,'rgba(245,158,11,0.3)',1,[6,4]);
+    x.beginPath(); x.moveTo(Ax,Ay); x.lineTo(Bx,By); x.lineTo(Cx2,Cy2); x.closePath();
+    x.fillStyle = 'rgba(59,130,246,0.07)'; x.fill();
 
-    // Max/Min lines
-    const maxY=oy-(D+M.abs(A))*yScale;
-    const minY=oy-(D-M.abs(A))*yScale;
-    CK.line(ctx,ox,maxY,ox+gw,maxY,'rgba(34,197,94,0.2)',1,[3,3]);
-    CK.line(ctx,ox,minY,ox+gw,minY,'rgba(239,68,68,0.2)',1,[3,3]);
+    const oppCol = '#EF4444', adjCol = '#22C55E', hypCol = '#3B82F6';
+    const isA = selAngle === 'A';
+    CK.ln(x, Ax, Ay, Bx, By, isA ? adjCol : oppCol, 2.5);
+    CK.ln(x, Ax, Ay, Cx2, Cy2, isA ? oppCol : adjCol, 2.5);
+    CK.ln(x, Bx, By, Cx2, Cy2, hypCol, 2.5);
 
-    // Labels
-    CK.text(ctx,'y = A·sin(Bx − C) + D',w/2,20,'#94A3B8','12px Inter,sans-serif');
-    CK.text(ctx,'Reference: sin(x)',w-90,40,'rgba(59,130,246,0.5)','10px Inter,sans-serif');
+    const m = 11;
+    x.beginPath(); x.moveTo(Ax+m,Ay); x.lineTo(Ax+m,Ay-m); x.lineTo(Ax,Ay-m);
+    x.strokeStyle='#64748B'; x.lineWidth=1.2; x.stroke();
 
-    // Update badges
-    const period=M.abs(B)>0.001?(2*PI/M.abs(B)):Infinity;
-    bPer.update(isFinite(period)?period.toFixed(3):'∞');
-    bMax.update((D+M.abs(A)).toFixed(3));
-    bMin.update((D-M.abs(A)).toFixed(3));
-    bMid.update(D.toFixed(3));
+    const arcR = 30;
+    CK.arc(x, Bx, By, arcR, M.PI, M.PI + radA, selAngle==='A'?'#06B6D4':'#4A7FA8', selAngle==='A'?2:1, false);
+    const angCRad = angC * D2R;
+    CK.arc(x, Cx2, Cy2, arcR, M.PI/2 - angCRad, M.PI/2, selAngle==='C'?'#06B6D4':'#4A7FA8', selAngle==='C'?2:1, false);
 
-    // Equation
-    const cs=C>=0?'−'+M.abs(C).toFixed(1):'+'+M.abs(C).toFixed(1);
-    const ds=D>=0?'+'+M.abs(D).toFixed(1):'−'+M.abs(D).toFixed(1);
-    eqBox.innerHTML='y = '+A.toFixed(1)+'·sin('+B.toFixed(1)+'x '+cs+') '+ds;
+    CK.txt(x, isA?'Adjacent':'Opposite', (Ax+Bx)/2, Ay+20, isA?'#22C55E':'#EF4444', '11px JetBrains Mono,monospace');
+    CK.txt(x, isA?'Opposite':'Adjacent', Ax-42, (Ay+Cy2)/2, isA?'#EF4444':'#22C55E', '11px JetBrains Mono,monospace');
+    CK.txt(x, 'Hypotenuse', (Bx+Cx2)/2+28, (By+Cy2)/2, '#3B82F6', '11px JetBrains Mono,monospace');
+
+    CK.txt(x, '∠B = 90°', Ax-18, Ay+14, '#88BFEA', '11px Inter,sans-serif');
+    CK.txt(x, '∠A = '+angA+'°', Bx+14, By-6, selAngle==='A'?'#06B6D4':'#88BFEA', '12px JetBrains Mono,monospace');
+    CK.txt(x, '∠C = '+angC+'°', Cx2-14, Cy2-14, selAngle==='C'?'#06B6D4':'#88BFEA', '12px JetBrains Mono,monospace');
+
+    const A = angA, C = angC;
+    CK.txt(x, `sin(${A}°) = cos(${C}°) = ${fmt(M.sin(A*D2R))}`, w/2, h*.08, '#BAE6FD', '13px JetBrains Mono,monospace');
+    CK.txt(x, `tan(${A}°) = cot(${C}°) = ${fmt(M.tan(A*D2R))}`, w/2, h*.08+22, '#88BFEA', '12px JetBrains Mono,monospace');
+    CK.txt(x, `sec(${A}°) = csc(${C}°) = ${fmt(1/M.cos(A*D2R))}`, w/2, h*.08+42, '#88BFEA', '12px JetBrains Mono,monospace');
   }
 
-  draw();
-  Nav.onShow['mod-5']=()=>draw();
+  onShow['v3'] = draw;
 }
 
-/* ═══════════════════════════════════════════
-   MODULE 6 — Pythagorean Identity Prover
-   ═══════════════════════════════════════════ */
-function initMod6(){
-  const body=document.getElementById('mod-6-body');
-  const{wrap,canvas}=UI.canvas(body,'pyth-canvas');
-  const cp=UI.el('div','controls-panel',body);
+/* ══════════════════════════════════════════════════
+   MODULE 4 · Geometric Square Prover sin²θ + cos²θ = 1
+══════════════════════════════════════════════════ */
+function initM4() {
+  const body = document.getElementById('b4');
+  const { canvas } = UI.canvas(body, 'c4');
+  const cp = UI.el('div', 'cp', body);
 
-  let angle=40;
-  const aSlider=UI.slider(cp,'Angle θ',5,85,1,angle,v=>{angle=v;draw()});
+  let angle = 40, dragging = false;
 
-  // Preset pills
-  UI.pills(cp,['30°','45°','60°'],(i)=>{
-    angle=[30,45,60][i];aSlider.set(angle);draw();
-  },-1);
-
-  UI.sep(cp);
-  const bRow=UI.el('div','badge-row',cp);
-  const bSin2=UI.badge(bRow,'sin²θ','—');
-  const bCos2=UI.badge(bRow,'cos²θ','—');
-  const bSum=UI.badge(bRow,'Sum','—');
+  const sA = UI.slider(cp, 'Angle θ (°)', 5, 85, 1, angle, v => { angle = v; draw(); });
+  UI.pills(cp, ['30°','45°','60°','75°'], (i) => {
+    angle = [30,45,60,75][i]; sA.set(angle);
+  }, -1);
 
   UI.sep(cp);
-  // Area bar
-  UI.el('label','',cp,'Area Proof: sin²θ + cos²θ');
-  const barWrap=UI.el('div','area-bar-wrap',cp);
-  const bar=UI.el('div','area-bar',barWrap);
-  const segSin=UI.el('div','area-seg',bar);segSin.style.background='rgba(239,68,68,0.6)';
-  const segCos=UI.el('div','area-seg',bar);segCos.style.background='rgba(34,197,94,0.6)';
-  const barLabel=UI.el('span','readout',barWrap,'= 1.0000');
+  const br = UI.el('div', 'br', cp);
+  const bS2 = UI.badge(br, 'sin²θ', '—');
+  const bC2 = UI.badge(br, 'cos²θ', '—');
+  const bSum = UI.badge(br, 'Sum', '—');
 
-  function draw(){
-    const{ctx,w,h}=CK.setup(canvas);CK.clear(ctx,w,h);
-    const cx=w*0.42,cy=h*0.52,R=M.min(w,h)*0.32;
+  UI.sep(cp);
+  UI.el('label', 'cl', cp, 'Area Proof Bar');
+  const abw = UI.el('div', 'abw', cp);
+  const ab = UI.el('div', 'ab', abw);
+  const asSin = UI.el('div', 'as', ab); asSin.style.background = 'rgba(239,68,68,0.65)';
+  const asCos = UI.el('div', 'as', ab); asCos.style.background = 'rgba(34,197,94,0.65)';
+  const barLbl = UI.el('span', 'ro', abw, '= 1.0000');
 
-    CK.grid(ctx,cx,cy,w,h,R/3);
-    CK.circle(ctx,cx,cy,R,'rgba(59,130,246,0.3)',1.5);
-    CK.axes(ctx,cx,cy,w,h);
+  UI.sep(cp);
+  UI.el('div', 'eb', cp, 'Drag the point on the circle or use the slider.\nThe red square area = sin²θ\nThe green square area = cos²θ\nBlue square area = hypotenuse² = 1\nSum always = 1.0000');
 
-    const rad=MathE.toRad(angle);
-    const sinV=M.sin(rad),cosV=M.cos(rad);
-    const px=cx+R*cosV,py=cy-R*sinV;
+  function draw() {
+    const rad = angle * D2R;
+    const s = M.sin(rad), c = M.cos(rad);
+    const s2 = s*s, c2 = c*c, sum = s2+c2;
+    bS2.set(fmt(s2,6)); bC2.set(fmt(c2,6)); bSum.set(sum.toFixed(6));
+    asSin.style.width = (s2 * 100).toFixed(2) + '%';
+    asCos.style.width = (c2 * 100).toFixed(2) + '%';
+    barLbl.textContent = '= ' + sum.toFixed(4);
+
+    const { x, w, h } = CK.setup(canvas);
+    if (w <= 0 || h <= 0) return;
+    CK.clr(x, w, h);
+    const cx = w * .48, cy = h * .54, R = M.min(w, h) * .28;
+
+    CK.grid(x, cx, cy, w, h, R / 3);
+    CK.circ(x, cx, cy, R, 'rgba(59,130,246,0.28)', 1.5);
+    CK.axes(x, cx, cy, w, h);
+
+    const px = cx + R * c, py = cy - R * s;
+    const cosL = R * c, sinL = R * s;
 
     // Triangle
-    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,cy);ctx.lineTo(px,py);ctx.closePath();
-    ctx.fillStyle='rgba(59,130,246,0.06)';ctx.fill();
-    CK.line(ctx,cx,cy,px,cy,'#22C55E',2); // cos side
-    CK.line(ctx,px,cy,px,py,'#EF4444',2); // sin side
-    CK.line(ctx,cx,cy,px,py,'#3B82F6',2); // hyp = 1
+    x.beginPath(); x.moveTo(cx,cy); x.lineTo(px,cy); x.lineTo(px,py); x.closePath();
+    x.fillStyle='rgba(59,130,246,0.07)'; x.fill();
+    CK.ln(x, cx, cy, px, cy, '#22C55E', 2.2);
+    CK.ln(x, px, cy, px, py, '#EF4444', 2.2);
+    CK.ln(x, cx, cy, px, py, '#3B82F6', 2.5);
 
-    // Right angle marker
-    const m=8;
-    ctx.beginPath();ctx.moveTo(px-m,cy);ctx.lineTo(px-m,cy-(py<cy?m:-m));ctx.lineTo(px,cy-(py<cy?m:-m));
-    ctx.strokeStyle='#64748B';ctx.lineWidth=1;ctx.stroke();
+    const m = 9;
+    x.beginPath(); x.moveTo(px-m,cy); x.lineTo(px-m,cy-(py<cy?m:-m)); x.lineTo(px,cy-(py<cy?m:-m));
+    x.strokeStyle='#64748B'; x.lineWidth=1; x.stroke();
 
-    // Angle arc
-    CK.arc(ctx,cx,cy,R*0.15,0,-rad,'#06B6D4',1.5,true);
-    CK.text(ctx,'θ',cx+R*0.22,cy-8,'#06B6D4','11px JetBrains Mono,monospace');
+    CK.arc(x, cx, cy, R*0.14, 0, -rad, '#06B6D4', 1.5, true);
+    CK.txt(x, 'θ', cx + R*0.2, cy - R*0.04, '#06B6D4', '11px JetBrains Mono,monospace');
 
-    // ── Geometric Squares ──
-    const cosLen=R*cosV, sinLen=R*sinV;
+    // sin² square
+    const sqS = M.abs(sinL);
+    x.fillStyle = 'rgba(239,68,68,0.13)';
+    x.strokeStyle = 'rgba(239,68,68,0.55)'; x.lineWidth = 1.5;
+    x.fillRect(px, py, sqS, sinL); x.strokeRect(px, py, sqS, sinL);
+    CK.txt(x, 'sin²θ', px + sqS/2, py + sinL/2 - 6, '#FF6B7A', '10px JetBrains Mono,monospace');
+    CK.txt(x, fmt(s*s,4), px+sqS/2, py+sinL/2+8, '#FF6B7A', '9px JetBrains Mono,monospace');
 
-    // cos² square (along base, extending down)
-    const cSqSize=M.abs(cosLen);
-    ctx.fillStyle='rgba(34,197,94,0.12)';
-    ctx.strokeStyle='rgba(34,197,94,0.5)';ctx.lineWidth=1;
-    ctx.fillRect(cx,cy,cosLen,cSqSize);
-    ctx.strokeRect(cx,cy,cosLen,cSqSize);
-    CK.text(ctx,'cos²θ',cx+cosLen/2,cy+cSqSize/2,'#22C55E','11px JetBrains Mono,monospace');
-    CK.text(ctx,'= '+(cosV*cosV).toFixed(4),cx+cosLen/2,cy+cSqSize/2+14,'#22C55E','9px JetBrains Mono,monospace');
+    // cos² square
+    const sqC = M.abs(cosL);
+    x.fillStyle = 'rgba(34,197,94,0.13)';
+    x.strokeStyle = 'rgba(34,197,94,0.55)'; x.lineWidth = 1.5;
+    x.fillRect(cx, cy, cosL, sqC); x.strokeRect(cx, cy, cosL, sqC);
+    CK.txt(x, 'cos²θ', cx + cosL/2, cy + sqC/2 - 4, '#34D88B', '10px JetBrains Mono,monospace');
+    CK.txt(x, fmt(c*c,4), cx+cosL/2, cy+sqC/2+10, '#34D88B', '9px JetBrains Mono,monospace');
 
-    // sin² square (along altitude, extending right)
-    const sSqSize=M.abs(sinLen);
-    ctx.fillStyle='rgba(239,68,68,0.12)';
-    ctx.strokeStyle='rgba(239,68,68,0.5)';ctx.lineWidth=1;
-    ctx.fillRect(px,py,sSqSize,sinLen);
-    ctx.strokeRect(px,py,sSqSize,sinLen);
-    CK.text(ctx,'sin²θ',px+sSqSize/2,py+sinLen/2,'#EF4444','11px JetBrains Mono,monospace');
-    CK.text(ctx,'= '+(sinV*sinV).toFixed(4),px+sSqSize/2,py+sinLen/2+14,'#EF4444','9px JetBrains Mono,monospace');
+    // hyp² square
+    x.save(); x.translate(cx, cy); x.rotate(-rad);
+    x.fillStyle = 'rgba(59,130,246,0.06)';
+    x.strokeStyle = 'rgba(59,130,246,0.28)'; x.lineWidth = 1;
+    x.fillRect(0, -R, R, R); x.strokeRect(0, -R, R, R);
+    x.restore();
+    CK.txt(x, '1² = 1', cx + R*0.55, cy - R*0.6, '#BAE6FD', '10px JetBrains Mono,monospace');
 
-    // Hyp² square outline (visual reference)
-    // Draw along hypotenuse - rotated square
-    ctx.save();ctx.translate(cx,cy);ctx.rotate(-rad);
-    ctx.fillStyle='rgba(59,130,246,0.05)';ctx.strokeStyle='rgba(59,130,246,0.25)';ctx.lineWidth=1;
-    ctx.fillRect(0,-R,R,R);ctx.strokeRect(0,-R,R,R);
-    ctx.restore();
-
-    // Point
-    CK.dot(ctx,px,py,5,'#06B6D4');
-
-    // Labels
-    CK.text(ctx,'r = 1',(cx+px)/2-8,(cy+py)/2-10,'#BAE6FD','11px JetBrains Mono,monospace');
-    CK.text(ctx,'sin²θ + cos²θ = 1',w/2,24,'#94A3B8','13px Inter,sans-serif');
-
-    // Update badges
-    const s2=sinV*sinV,c2=cosV*cosV;
-    bSin2.update(s2.toFixed(6));bCos2.update(c2.toFixed(6));bSum.update((s2+c2).toFixed(6));
-    segSin.style.width=(s2*100).toFixed(2)+'%';
-    segCos.style.width=(c2*100).toFixed(2)+'%';
-    barLabel.textContent='= '+(s2+c2).toFixed(4);
+    CK.dot(x, px, py, 6, '#06B6D4'); CK.dot(x, px, py, 3, '#fff');
+    CK.txt(x, 'sin²θ + cos²θ = 1', w/2, 22, '#88BFEA', '13px Inter,sans-serif');
   }
 
-  draw();
-  Nav.onShow['mod-6']=()=>draw();
+  function startDrag(e) {
+    const p = getPointerPos(e, canvas);
+    const cx = p.w*.48, cy = p.h*.54, R = M.min(p.w,p.h)*.28;
+    const rad = angle*D2R, px = cx+R*M.cos(rad), py = cy-R*M.sin(rad);
+    if (M.hypot(p.x-px, p.y-py) < 24) dragging = true;
+  }
+  function moveDrag(e) {
+    if (!dragging) return;
+    const p = getPointerPos(e, canvas);
+    const cx = p.w*.48, cy = p.h*.54;
+    let a = M.atan2(-(p.y-cy), p.x-cx) * R2D;
+    if (a < 0) a += 360;
+    a = clamp(M.round(a), 5, 85);
+    angle = a; sA.set(angle);
+  }
+  canvas.addEventListener('mousedown', startDrag);
+  canvas.addEventListener('touchstart', startDrag, { passive: true });
+  window.addEventListener('mousemove', moveDrag);
+  window.addEventListener('touchmove', moveDrag, { passive: true });
+  window.addEventListener('mouseup', () => dragging = false);
+  window.addEventListener('touchend', () => dragging = false);
+
+  onShow['v4'] = draw;
 }
 
+/* ══════════════════════════════════════════════════
+   MODULE 5 · Two-Point Elevation Solver
+══════════════════════════════════════════════════ */
+function initM5() {
+  const body = document.getElementById('b5');
+  const { canvas } = UI.canvas(body, 'c5');
+  const cp = UI.el('div', 'cp', body);
 
+  let d = 50, alpha = 55, beta = 35;
 
-/* ═══════════════════════════════════════════
-   MODULE 7 — Height & Distance Simulator
-   ═══════════════════════════════════════════ */
-function initMod7(){
-  const body=document.getElementById('mod-7-body');
-  const{wrap,canvas}=UI.canvas(body,'hd-canvas');
-  const cp=UI.el('div','controls-panel',body);
-
-  let mode=0; // 0=Building, 1=Solar
-  UI.el('label','',cp,'Scenario');
-  UI.pills(cp,['Building Clinometer','Solar Shadow'],(i)=>{mode=i;updateUI();draw()},0);
+  UI.slider(cp, 'Distance d (m)', 10, 150, 1, d, v => { d = v; draw(); });
+  const sA = UI.slider(cp, 'Near Elev. α (°)', 20, 80, 1, alpha, v => { alpha = v; if(alpha<=beta+1){beta=alpha-1;sB.set(beta);} draw(); });
+  const sB = UI.slider(cp, 'Far Elev. β (°)', 5, 75, 1, beta, v => { beta = v; if(beta>=alpha-1){alpha=beta+1;sA.set(alpha);} draw(); });
 
   UI.sep(cp);
+  const br = UI.el('div', 'br', cp);
+  const bH   = UI.badge(br, 'Height h', '—');
+  const bCotA = UI.badge(br, 'cot α', '—');
+  const bCotB = UI.badge(br, 'cot β', '—');
 
-  // Building controls
-  const bPanel=UI.el('div','submode-panel active',cp);
-  let dist=30,eyeH=1.6,elevAngle=35;
-  const sDist=UI.slider(bPanel,'Distance d (m)',5,100,1,dist,v=>{dist=v;draw()});
-  const sEye=UI.slider(bPanel,'Eye Height h₀ (m)',1,2.5,0.1,eyeH,v=>{eyeH=v;draw()});
-  const sElev=UI.slider(bPanel,'Elevation θ (°)',5,85,1,elevAngle,v=>{elevAngle=v;draw()});
-  const bBldg=UI.el('div','badge-row',bPanel);
-  const bH=UI.badge(bBldg,'Height H','—');
-  const bTanV=UI.badge(bBldg,'tan θ','—');
+  UI.sep(cp);
+  const frmBox = UI.el('div', 'eb', cp);
+  frmBox.innerHTML = 'Formula:<br><strong>h = d / (cot β − cot α)</strong><br><br>Two observers at different<br>distances look up at the same<br>inaccessible object/tower.';
 
-  // Solar controls
-  const sPanel=UI.el('div','submode-panel',cp);
-  let objHeight=10,sunAngle=45;
-  const sObjH=UI.slider(sPanel,'Object Height (m)',2,50,1,objHeight,v=>{objHeight=v;draw()});
-  const sSun=UI.slider(sPanel,'Sun Angle (°)',5,85,1,sunAngle,v=>{sunAngle=v;draw()});
-  const sSBadges=UI.el('div','badge-row',sPanel);
-  const bShadow=UI.badge(sSBadges,'Shadow','—');
-  const bSunTan=UI.badge(sSBadges,'tan(sun)','—');
+  function draw() {
+    const cotA = 1 / M.tan(alpha * D2R), cotB = 1 / M.tan(beta * D2R);
+    const ht = d / (cotB - cotA);
+    bH.set(fmt(ht,3)+' m');
+    bCotA.set(fmt(cotA,4)); bCotB.set(fmt(cotB,4));
 
-  function updateUI(){
-    bPanel.classList.toggle('active',mode===0);
-    sPanel.classList.toggle('active',mode===1);
-  }
+    const { x, w, h } = CK.setup(canvas);
+    if (w <= 0 || h <= 0) return;
+    CK.clr(x, w, h);
 
-  function draw(){
-    const{ctx,w,h}=CK.setup(canvas);CK.clear(ctx,w,h);
-    CK.grid(ctx,0,0,w,h,40);
+    const gY = h * .8;
+    const totalGroundSpan = d + ht * cotA;
+    const scX = (w * .62) / M.max(totalGroundSpan, 10);
+    const scY = M.min((gY * .72) / M.max(ht, 1), 4.5);
 
-    if(mode===0) drawBuilding(ctx,w,h);
-    else drawSolar(ctx,w,h);
-  }
+    const P2x = w * .12;
+    const P1x = P2x + d * scX;
+    const Tx  = P1x + ht * cotA * scX;
+    const TopY = gY - ht * scY;
 
-  function drawBuilding(ctx,w,h){
-    const groundY=h*0.82;
-    const scale=M.min((w*0.7)/dist,(groundY-40)/60);
-    const personX=w*0.15,buildX=personX+dist*scale;
+    CK.grid(x, 0, gY, w, h, 40);
 
     // Ground
-    CK.line(ctx,20,groundY,w-20,groundY,'#64748B',1);
+    CK.ln(x, 20, gY, w - 20, gY, '#5A8EBB', 1.2);
+    x.fillStyle = 'rgba(20,50,100,0.25)'; x.fillRect(20, gY, w-40, h-gY);
 
-    // Person (stick figure)
-    const pH=eyeH*scale*3;
-    CK.line(ctx,personX,groundY,personX,groundY-pH,'#BAE6FD',2);
-    CK.circle(ctx,personX,groundY-pH-6,6,'#BAE6FD',1.5);
-    // Eye level line
-    const eyeY=groundY-eyeH*scale*3;
-    CK.line(ctx,personX,eyeY,personX+8,eyeY,'#06B6D4',1,[3,3]);
+    // Tower
+    const tW = 18;
+    x.fillStyle = 'rgba(59,130,246,0.18)';
+    x.fillRect(Tx - tW/2, TopY, tW, gY - TopY);
+    x.strokeStyle = '#3B82F6'; x.lineWidth = 2;
+    x.strokeRect(Tx - tW/2, TopY, tW, gY - TopY);
 
-    // Building
-    const H=eyeH+dist*M.tan(MathE.toRad(elevAngle));
-    const bldgH=H*scale*3;
-    const bldgW=24;
-    CK.fillRect(ctx,buildX-bldgW/2,groundY-bldgH,bldgW,bldgH,'rgba(59,130,246,0.15)');
-    ctx.strokeStyle='#3B82F6';ctx.lineWidth=1.5;ctx.strokeRect(buildX-bldgW/2,groundY-bldgH,bldgW,bldgH);
-
-    // Windows
-    for(let wy=groundY-bldgH+12;wy<groundY-8;wy+=18){
-      CK.fillRect(ctx,buildX-6,wy,5,8,'rgba(6,182,212,0.2)');
-      CK.fillRect(ctx,buildX+2,wy,5,8,'rgba(6,182,212,0.2)');
+    for (let wy = TopY + 14; wy < gY - 10; wy += 22) {
+      x.fillStyle = 'rgba(6,182,212,0.22)';
+      x.fillRect(Tx-6, wy, 5, 8); x.fillRect(Tx+2, wy, 5, 8);
     }
 
-    // Line of sight
-    const topY=groundY-bldgH;
-    CK.line(ctx,personX,eyeY,buildX,topY,'#F59E0B',1.5,[6,4]);
+    // Sightlines
+    CK.ln(x, P1x, gY, Tx, TopY, '#F59E0B', 1.8, [6,4]);
+    CK.ln(x, P2x, gY, Tx, TopY, '#A855F7', 1.8, [6,4]);
 
-    // Angle arc
-    CK.arc(ctx,personX,eyeY,30,0,-MathE.toRad(elevAngle),'#06B6D4',1.5,true);
-    CK.text(ctx,'θ='+elevAngle+'°',personX+40,eyeY-12,'#06B6D4','11px JetBrains Mono,monospace');
+    const angAlpha = M.atan2(gY - TopY, Tx - P1x);
+    const angBeta  = M.atan2(gY - TopY, Tx - P2x);
+    CK.arc(x, P1x, gY, 30, -angAlpha, 0, '#F59E0B', 1.5);
+    CK.arc(x, P2x, gY, 30, -angBeta,  0, '#A855F7', 1.5);
 
-    // Distance line
-    CK.line(ctx,personX,groundY+14,buildX,groundY+14,'#22C55E',1.5);
-    CK.text(ctx,'d = '+dist+'m',(personX+buildX)/2,groundY+28,'#22C55E','11px JetBrains Mono,monospace');
+    CK.txt(x, 'α='+alpha+'°', P1x - 2, gY - 38, '#F59E0B', '11px JetBrains Mono,monospace');
+    CK.txt(x, 'β='+beta+'°', P2x + 2, gY - 38, '#A855F7', '11px JetBrains Mono,monospace');
 
-    // Height label
-    CK.line(ctx,buildX+bldgW/2+10,groundY,buildX+bldgW/2+10,topY,'#EF4444',1.5);
-    CK.text(ctx,'H = '+H.toFixed(2)+'m',buildX+bldgW/2+30,(groundY+topY)/2,'#EF4444','11px JetBrains Mono,monospace');
+    // Observers
+    [[P1x,'α (near)'],[P2x,'β (far)']].forEach(([px2, lbl]) => {
+      CK.ln(x, px2, gY, px2, gY-24, '#BAE6FD', 2);
+      CK.circ(x, px2, gY-30, 6, '#BAE6FD', 1.5);
+      CK.txt(x, lbl, px2, gY+16, '#88BFEA', '10px Inter,sans-serif');
+      CK.dot(x, px2, gY, 3, '#06B6D4');
+    });
 
-    // Eye height label
-    CK.text(ctx,'h₀='+eyeH+'m',personX-30,eyeY,'#94A3B8','9px Inter,sans-serif');
-
-    // Formula
-    CK.text(ctx,'H = h₀ + d·tan θ = '+eyeH+' + '+dist+'·tan('+elevAngle+'°) = '+H.toFixed(2)+'m',w/2,24,'#94A3B8','12px Inter,sans-serif');
-
-    bH.update(H.toFixed(2)+' m');
-    bTanV.update(M.tan(MathE.toRad(elevAngle)).toFixed(4));
-  }
-
-  function drawSolar(ctx,w,h){
-    const groundY=h*0.78;
-    const scale=M.min((w*0.6)/80,(groundY-60)/objHeight);
-    const objX=w*0.4;
-
-    // Ground
-    CK.line(ctx,20,groundY,w-20,groundY,'#64748B',1);
-
-    // Object (pole/tree)
-    const oH=objHeight*scale;
-    CK.line(ctx,objX,groundY,objX,groundY-oH,'#3B82F6',3);
-    CK.dot(ctx,objX,groundY-oH,4,'#06B6D4');
-
-    // Shadow
-    const shadowLen=objHeight/M.tan(MathE.toRad(sunAngle));
-    const sLen=shadowLen*scale;
-    CK.line(ctx,objX,groundY,objX+sLen,groundY,'#64748B',3);
-    CK.text(ctx,'Shadow = '+shadowLen.toFixed(2)+'m',(objX+objX+sLen)/2,groundY+18,'#94A3B8','11px JetBrains Mono,monospace');
-
-    // Fill shadow area
-    ctx.fillStyle='rgba(100,116,139,0.1)';
-    ctx.beginPath();ctx.moveTo(objX,groundY);ctx.lineTo(objX+sLen,groundY);ctx.lineTo(objX,groundY-oH);ctx.closePath();ctx.fill();
-
-    // Sun ray
-    CK.line(ctx,objX+sLen,groundY,objX,groundY-oH,'#F59E0B',1.5,[5,5]);
-
-    // Sun angle arc
-    CK.arc(ctx,objX+sLen,groundY,25,PI,PI+MathE.toRad(sunAngle),'#F59E0B',1.5,false);
-    CK.text(ctx,sunAngle+'°',objX+sLen-35,groundY-12,'#F59E0B','11px JetBrains Mono,monospace');
+    // Distance arrow
+    CK.ln(x, P2x, gY+32, P1x, gY+32, '#22C55E', 1.5);
+    CK.dot(x, P2x, gY+32, 3,'#22C55E'); CK.dot(x, P1x, gY+32, 3,'#22C55E');
+    CK.txt(x, 'd = '+d+' m', (P1x+P2x)/2, gY+46, '#22C55E', '11px JetBrains Mono,monospace');
 
     // Height label
-    CK.text(ctx,objHeight+'m',objX-20,(groundY+groundY-oH)/2,'#3B82F6','11px JetBrains Mono,monospace');
+    CK.ln(x, Tx + tW/2 + 12, gY, Tx + tW/2 + 12, TopY, '#EF4444', 1.5);
+    CK.txt(x, 'h = '+fmt(ht,2)+' m', Tx + tW/2 + 22, (gY+TopY)/2, '#FF6B7A', '11px JetBrains Mono,monospace', 'left');
 
-    // Sun icon
-    CK.dot(ctx,objX-80,groundY-oH-40,12,'rgba(245,158,11,0.4)');
-    CK.dot(ctx,objX-80,groundY-oH-40,6,'#F59E0B');
-    CK.text(ctx,'☀',objX-80,groundY-oH-40,'#F59E0B','16px sans-serif');
+    CK.dot(x, Tx, TopY, 5, '#06B6D4');
 
-    // Formula
-    CK.text(ctx,'Shadow = Height / tan(θ) = '+objHeight+' / tan('+sunAngle+'°) = '+shadowLen.toFixed(2)+'m',w/2,24,'#94A3B8','12px Inter,sans-serif');
-
-    bShadow.update(shadowLen.toFixed(2)+' m');
-    bSunTan.update(M.tan(MathE.toRad(sunAngle)).toFixed(4));
+    CK.txt(x, 'h = d/(cotβ − cotα) = '+d+'/('+fmt(cotB,3)+'−'+fmt(cotA,3)+') = '+fmt(ht,2)+' m',
+      w/2, 20, '#88BFEA', '11px JetBrains Mono,monospace');
   }
 
-  draw();
-  Nav.onShow['mod-7']=()=>draw();
+  onShow['v5'] = draw;
 }
 
-/* ═══════════════════════════════════════════
-   MODULE 8 — Degree ↔ Radian Arc-Length Visualizer
-   ═══════════════════════════════════════════ */
-function initMod8(){
-  const body=document.getElementById('mod-8-body');
-  const{wrap,canvas}=UI.canvas(body,'drad-canvas');
-  const cp=UI.el('div','controls-panel',body);
+/* ══════════════════════════════════════════════════
+   MODULE 6 · Sun Altitude & Shadow Length (tan θ = h / s)
+══════════════════════════════════════════════════ */
+function initM6() {
+  const body = document.getElementById('b6');
+  const { canvas } = UI.canvas(body, 'c6', 'tall');
+  const cp = UI.el('div', 'cp', body);
 
-  let degrees=57.2958,radius=1;
-  const sDeg=UI.slider(cp,'Degrees',0,720,0.1,degrees,v=>{degrees=v;draw()});
-  const sRad=UI.slider(cp,'Radius r',0.5,3,0.1,radius,v=>{radius=v;draw()});
+  let sunAngle = 45;
+  let towerH = 20;
+  let dragging = false;
+
+  const sAng = UI.slider(cp, 'Sun Altitude θ (°)', 15, 80, 1, sunAngle, v => { sunAngle = v; draw(); });
+  const sHt  = UI.slider(cp, 'Object Height h (m)', 5, 50, 1, towerH, v => { towerH = v; draw(); });
 
   UI.sep(cp);
-  UI.el('label','',cp,'Quick π-Fraction Chips');
-  const piChips=[
-    {l:'π/6',v:30},{l:'π/4',v:45},{l:'π/3',v:60},{l:'π/2',v:90},
-    {l:'2π/3',v:120},{l:'π',v:180},{l:'3π/2',v:270},{l:'2π',v:360},
-    {l:'1 rad',v:57.2958},{l:'3π',v:540},{l:'4π',v:720}
+  UI.el('label', 'cl', cp, 'Time of Day Presets');
+  const sunPresets = [
+    { label: 'Morning (30°)', a: 30 },
+    { label: '45° (Shadow = Height!)', a: 45 },
+    { label: 'High Noon (60°)', a: 60 },
+    { label: 'Near Overhead (75°)', a: 75 }
   ];
-  UI.pills(cp,piChips.map(p=>p.l),(i)=>{degrees=piChips[i].v;sDeg.set(degrees);draw()},-1);
+  const presetPills = UI.pills(cp, sunPresets.map(p => p.label), i => {
+    sunAngle = sunPresets[i].a;
+    sAng.set(sunAngle);
+  }, 1);
 
   UI.sep(cp);
-  const bRow=UI.el('div','badge-row',cp);
-  const bDeg=UI.badge(bRow,'Degrees','—');
-  const bRad=UI.badge(bRow,'Radians','—');
-  const bArc=UI.badge(bRow,'Arc Length','—');
-  const bPiFrac=UI.badge(bRow,'π-Fraction','—');
+  const br = UI.el('div', 'br', cp);
+  const bAng = UI.badge(br, 'Sun Angle θ', '45°');
+  const bHt  = UI.badge(br, 'Height h', '20.0 m');
+  const bShd = UI.badge(br, 'Shadow s', '20.00 m');
+  const bTan = UI.badge(br, 'tan θ = h/s', '1.0000');
 
   UI.sep(cp);
-  const infoBox=UI.el('div','euler-box',cp);
+  const expBox = UI.el('div', 'eb', cp);
 
-  function draw(){
-    const{ctx,w,h}=CK.setup(canvas);CK.clear(ctx,w,h);
-    const cx=w*0.5,cy=h*0.5,R=M.min(w,h)*0.34*radius;
+  function draw() {
+    const rad = sunAngle * D2R;
+    const tanV = M.tan(rad);
+    const shadowS = towerH / tanV;
 
-    CK.grid(ctx,cx,cy,w,h,R/3);
-    CK.axes(ctx,cx,cy,w,h);
+    bAng.set(sunAngle + '°');
+    bHt.set(towerH.toFixed(1) + ' m');
+    bShd.set(shadowS.toFixed(2) + ' m');
+    bTan.set(fmt(tanV, 4));
 
-    // Full circle reference
-    CK.circle(ctx,cx,cy,R,'rgba(59,130,246,0.2)',1);
-
-    // Compute
-    const rad=MathE.toRad(degrees);
-    const arcLen=rad*radius;
-
-    // Draw arc
-    const totalRad=rad;
-    const fullLoops=M.floor(totalRad/(2*PI));
-    const remainder=totalRad%(2*PI);
-
-    // Draw full loops faintly
-    for(let i=0;i<fullLoops;i++){
-      CK.arc(ctx,cx,cy,R-(i*3),0,-2*PI,'rgba(6,182,212,0.15)',2,true);
+    let specialNote = '';
+    if (M.abs(sunAngle - 45) < 0.6) {
+      specialNote = '<span style="color:#34D88B">★ At θ = 45°, tan 45° = 1, so Shadow s = Height h!</span>';
+    } else if (M.abs(sunAngle - 30) < 0.6) {
+      specialNote = '<span style="color:#FFBC42">★ At θ = 30°, tan 30° = 1/√3, so Shadow s = h·√3 (≈ 1.732× longer)!</span>';
+    } else if (M.abs(sunAngle - 60) < 0.6) {
+      specialNote = '<span style="color:#38D9F5">★ At θ = 60°, tan 60° = √3, so Shadow s = h/√3 (≈ 0.577× shorter)!</span>';
+    } else {
+      specialNote = 'As the Sun rises higher (θ ↑), tan θ increases and the shadow shrinks!';
     }
 
-    // Draw remaining arc
-    const arcR=R-(fullLoops*3);
-    if(remainder>0){
-      ctx.beginPath();ctx.arc(cx,cy,arcR,0,-remainder,true);
-      ctx.strokeStyle='#06B6D4';ctx.lineWidth=3;ctx.stroke();
+    expBox.innerHTML = `<strong>Class 10 Shadow Formula:</strong><br>
+      tan θ = Opposite / Adjacent = <strong>h / s</strong><br>
+      ⇒ <strong>Shadow s = h / tan θ = h · cot θ</strong><br><br>
+      s = ${towerH} / tan(${sunAngle}°) = <strong>${shadowS.toFixed(2)} m</strong><br>
+      ${specialNote}`;
+
+    const { x, w, h } = CK.setup(canvas);
+    if (w <= 0 || h <= 0) return;
+    CK.clr(x, w, h);
+
+    const gY = h * 0.80;
+    CK.grid(x, 0, gY, w, h, 45);
+
+    // Sky glow gradient based on sun altitude
+    const skyGrad = x.createLinearGradient(0, 0, 0, gY);
+    skyGrad.addColorStop(0, 'rgba(14,35,78,0.45)');
+    skyGrad.addColorStop(1, 'rgba(6,15,34,0.1)');
+    x.fillStyle = skyGrad;
+    x.fillRect(0, 0, w, gY);
+
+    // Ground surface
+    x.fillStyle = 'rgba(16,42,82,0.35)';
+    x.fillRect(20, gY, w - 40, h - gY);
+    CK.ln(x, 20, gY, w - 20, gY, '#5A8EBB', 1.8);
+
+    // Dynamic scaling so tower + shadow + sun fit comfortably
+    const baseTx = w * 0.28;
+    const maxHorizMeters = M.max(towerH / M.tan(15 * D2R), 45);
+    const sc = M.min((w * 0.58) / maxHorizMeters, (gY * 0.62) / 50);
+    // Keep visual scale generous for smaller heights too
+    const visScale = M.max(sc, M.min((w * 0.54) / M.max(shadowS, 8), (gY * 0.56) / M.max(towerH, 8)));
+
+    const hPx = towerH * visScale;
+    const sPx = shadowS * visScale;
+
+    const topY = gY - hPx;
+    const tipX = baseTx + sPx;
+
+    // Sun position along upper-left ray along angle θ
+    const sunDist = M.min(w * 0.22, gY * 0.32);
+    const sunX = clamp(baseTx - sunDist * M.cos(rad), 48, baseTx - 28);
+    const sunY = clamp(topY - sunDist * M.sin(rad), 44, topY - 24);
+
+    // Dashed sun path arc hint
+    CK.arc(x, baseTx, topY, sunDist, M.PI, M.PI + 82 * D2R, 'rgba(255,188,66,0.18)', 1.2, false);
+
+    // Sunlit triangle fill (between tower, shadow, and hypotenuse)
+    x.beginPath();
+    x.moveTo(baseTx, gY);
+    x.lineTo(baseTx, topY);
+    x.lineTo(tipX, gY);
+    x.closePath();
+    x.fillStyle = 'rgba(255,188,66,0.07)';
+    x.fill();
+
+    // Dark Cast Shadow on the Ground
+    x.save();
+    x.fillStyle = 'rgba(2,6,18,0.85)';
+    x.fillRect(baseTx, gY - 4, sPx, 8);
+    CK.ln(x, baseTx, gY, tipX, gY, '#EF4444', 4.5);
+    x.restore();
+
+    // Tower / Building
+    const tW = 22;
+    x.fillStyle = 'rgba(59,130,246,0.24)';
+    x.strokeStyle = '#3B82F6';
+    x.lineWidth = 2.2;
+    x.fillRect(baseTx - tW / 2, topY, tW, hPx);
+    x.strokeRect(baseTx - tW / 2, topY, tW, hPx);
+
+    // Tower windows
+    for (let wy = topY + 12; wy < gY - 10; wy += 18) {
+      x.fillStyle = 'rgba(56,189,248,0.28)';
+      x.fillRect(baseTx - 6, wy, 4, 7);
+      x.fillRect(baseTx + 2, wy, 4, 7);
     }
 
-    // Tick at 0
-    CK.line(ctx,cx+R-5,cy,cx+R+5,cy,'#BAE6FD',2);
+    // Right-angle marker at tower base
+    const m = 11;
+    x.beginPath();
+    x.moveTo(baseTx + m, gY);
+    x.lineTo(baseTx + m, gY - m);
+    x.lineTo(baseTx, gY - m);
+    x.strokeStyle = '#64748B';
+    x.lineWidth = 1.2;
+    x.stroke();
 
-    // End point
-    const ex=cx+arcR*M.cos(-remainder),ey=cy+arcR*M.sin(-remainder);
-    CK.dot(ctx,ex,ey,5,'#06B6D4');
-    CK.dot(ctx,cx+R,cy,4,'#22C55E');
+    // Sunbeam Ray from Sun through Tower Top to Shadow Tip
+    CK.ln(x, sunX, sunY, baseTx, topY, '#FFBC42', 2.2, [6, 4]);
+    CK.arr(x, baseTx, topY, tipX, gY, '#FFBC42', 2.5);
 
-    // Radius line
-    CK.line(ctx,cx,cy,ex,ey,'rgba(59,130,246,0.4)',1.5);
-
-    // Angle arc small
-    if(remainder>0.05){
-      CK.arc(ctx,cx,cy,20,0,-remainder,'#F59E0B',1.5,true);
+    // Glowing Sun Disk + Rays
+    x.save();
+    x.shadowColor = '#FFBC42';
+    x.shadowBlur = 22;
+    CK.dot(x, sunX, sunY, 16, '#FFBC42');
+    CK.dot(x, sunX, sunY, 10, '#FFF3B0');
+    x.restore();
+    for (let k = 0; k < 8; k++) {
+      const a = (k * M.PI) / 4;
+      CK.ln(x, sunX + 20 * M.cos(a), sunY + 20 * M.sin(a), sunX + 27 * M.cos(a), sunY + 27 * M.sin(a), '#FFBC42', 1.8);
     }
+    CK.txt(x, '☀ Drag Sun', sunX, sunY - 26, '#FFBC42', '10px Inter,sans-serif');
 
-    // Labels
-    CK.text(ctx,degrees.toFixed(1)+'°',cx+30,cy-R-16,'#06B6D4','12px JetBrains Mono,monospace');
-    CK.text(ctx,'r = '+radius.toFixed(1),cx+R*0.5+10,cy+14,'#94A3B8','10px JetBrains Mono,monospace');
+    // Sun Altitude Angle Arc θ at shadow tip
+    const arcR = M.min(38, sPx * 0.45);
+    CK.arc(x, tipX, gY, arcR, M.PI, M.PI + rad, '#06B6D4', 2.2, false);
+    CK.txt(x, 'θ = ' + sunAngle + '°', tipX - arcR - 28, gY - 14, '#06B6D4', '12px JetBrains Mono,monospace');
 
-    // Arc length visualization: show arc length = r * θ
-    CK.text(ctx,'Arc = r · θ(rad) = '+radius.toFixed(1)+' × '+rad.toFixed(4)+' = '+arcLen.toFixed(4),w/2,28,'#94A3B8','12px Inter,sans-serif');
+    // Dimension labels
+    CK.txt(x, 'Height h = ' + towerH + ' m', baseTx - tW / 2 - 12, (topY + gY) / 2, '#3B82F6', '12px JetBrains Mono,monospace', 'right');
+    CK.txt(x, 'Shadow Length s = ' + shadowS.toFixed(2) + ' m', baseTx + sPx / 2, gY + 24, '#FF6B7A', '12px JetBrains Mono,monospace');
 
-    // 1 radian marker
-    if(degrees>=57.2958){
-      const oneRadAngle=-1; // 1 radian
-      const mx=cx+R*M.cos(oneRadAngle),my=cy+R*M.sin(oneRadAngle);
-      CK.line(ctx,mx-3,my-3,mx+3,my+3,'#F59E0B',1.5);
-      CK.line(ctx,mx-3,my+3,mx+3,my-3,'#F59E0B',1.5);
-      CK.text(ctx,'1 rad ≈ 57.3°',mx+12,my-8,'#F59E0B','9px JetBrains Mono,monospace');
-    }
-
-    // Update badges
-    bDeg.update(degrees.toFixed(2)+'°');
-    bRad.update(rad.toFixed(6)+' rad');
-    bArc.update(arcLen.toFixed(4));
-
-    // π fraction approximation
-    const piFrac=rad/PI;
-    let fracStr;
-    const commonFracs={0.1667:'π/6',0.25:'π/4',0.3333:'π/3',0.5:'π/2',0.6667:'2π/3',1:'π',1.5:'3π/2',2:'2π',3:'3π',4:'4π'};
-    const key=Object.keys(commonFracs).find(k=>M.abs(piFrac-k)<0.005);
-    fracStr=key?commonFracs[key]:piFrac.toFixed(4)+'π';
-    bPiFrac.update(fracStr);
-
-    infoBox.innerHTML='<strong>1 radian</strong> = the angle where arc length = radius<br>1 rad = 180°/π ≈ <strong>57.2958°</strong><br>Full circle = 2π rad = 360°';
+    // Top banner equation
+    CK.txt(x, `tan(${sunAngle}°) = h / s = ${towerH} / ${shadowS.toFixed(2)} = ${fmt(tanV, 4)}   ⇒   Shadow s = ${shadowS.toFixed(2)} m`,
+      w / 2, 22, '#BAE6FD', '12px JetBrains Mono,monospace');
   }
 
-  draw();
-  Nav.onShow['mod-8']=()=>draw();
+  function updateFromPointer(e) {
+    const p = getPointerPos(e, canvas);
+    const gY = p.h * 0.80;
+    const baseTx = p.w * 0.28;
+    const dx = M.abs(p.x - baseTx);
+    const dy = M.max(10, gY - p.y);
+    const ang = clamp(M.round(M.atan2(dy, M.max(dx, 10)) * R2D), 15, 80);
+    sunAngle = ang;
+    sAng.set(sunAngle);
+    presetPills.setActive(-1);
+  }
+
+  canvas.addEventListener('mousedown', e => { dragging = true; updateFromPointer(e); });
+  canvas.addEventListener('touchstart', e => { dragging = true; updateFromPointer(e); }, { passive: true });
+  window.addEventListener('mousemove', e => { if (dragging) updateFromPointer(e); });
+  window.addEventListener('touchmove', e => { if (dragging) updateFromPointer(e); }, { passive: true });
+  window.addEventListener('mouseup', () => dragging = false);
+  window.addEventListener('touchend', () => dragging = false);
+
+  onShow['v6'] = draw;
 }
 
+/* ══════════════════════════════════════════════════
+   MODULE 7 · 4-Quadrant ASTC Explorer
+══════════════════════════════════════════════════ */
+function initM7() {
+  const body = document.getElementById('b7');
+  const { canvas } = UI.canvas(body, 'c7');
+  const cp = UI.el('div', 'cp', body);
 
+  let angle = 45, dragging = false;
 
-/* ═══════════════════════════════════════════
-   MODULE 9 — Tangent & Asymptote Visualizer
-   ═══════════════════════════════════════════ */
-function initMod9(){
-  const body=document.getElementById('mod-9-body');
-  const{wrap,canvas}=UI.canvas(body,'tan-canvas');
-  const cp=UI.el('div','controls-panel',body);
-
-  let angle=45;
-  const aSlider=UI.slider(cp,'Angle θ (°)',-360,360,1,angle,v=>{angle=v;draw()});
-
-  UI.pills(cp,['0°','30°','45°','60°','80°','89°','120°','135°','180°','270°'],(i)=>{
-    angle=[0,30,45,60,80,89,120,135,180,270][i];aSlider.set(angle);draw();
-  },-1);
+  const sA = UI.slider(cp, 'Angle θ (°)', 0, 360, 1, angle, v => { angle = v; draw(); });
 
   UI.sep(cp);
-  const bRow=UI.el('div','badge-row',cp);
-  const bSin=UI.badge(bRow,'sin θ','—');
-  const bCos=UI.badge(bRow,'cos θ','—');
-  const bTan=UI.badge(bRow,'tan θ','—');
+  UI.el('label', 'cl', cp, 'Quick Angles');
+  UI.pills(cp, ['30°','90°','120°','180°','210°','270°','300°','360°'], (i) => {
+    angle = [30,90,120,180,210,270,300,360][i]; sA.set(angle);
+  }, -1);
 
   UI.sep(cp);
-  const infoBox=UI.el('div','euler-box',cp);
-  infoBox.innerHTML='tan θ = sin θ / cos θ<br>As cos θ → 0, tan θ → ±∞<br>Asymptotes at ±90°, ±270°';
+  const astcEl = UI.el('span', 'astc aq1', cp, 'Q1 · All (+)');
+  astcEl.style.display='block';
 
-  function draw(){
-    const{ctx,w,h}=CK.setup(canvas);CK.clear(ctx,w,h);
+  UI.sep(cp);
+  const br = UI.el('div', 'br', cp);
+  const bS = UI.badge(br, 'sin', '—');
+  const bC = UI.badge(br, 'cos', '—');
+  const bT = UI.badge(br, 'tan', '—');
 
-    // Split: left = unit circle (35%), right = tan graph (65%)
-    const splitX=w*0.32;
+  UI.sep(cp);
+  const br2 = UI.el('div', 'br', cp);
+  const bCsc = UI.badge(br2, 'csc', '—');
+  const bSec = UI.badge(br2, 'sec', '—');
+  const bCot = UI.badge(br2, 'cot', '—');
 
-    // ── Unit Circle (left) ──
-    const ccx=splitX*0.5,ccy=h*0.5,R=M.min(splitX*0.8,h*0.35);
-    CK.circle(ctx,ccx,ccy,R,'rgba(59,130,246,0.3)',1.5);
-    CK.axes(ctx,ccx,ccy,splitX,h);
+  UI.sep(cp);
+  const expBox = UI.el('div', 'eb', cp);
 
-    const rad=MathE.toRad(angle);
-    const sinV=M.sin(rad),cosV=M.cos(rad),tanV=M.tan(rad);
-    const px=ccx+R*cosV,py=ccy-R*sinV;
+  function getQuadrant(deg) {
+    const d = ((deg % 360) + 360) % 360;
+    if (d < 90)  return 1;
+    if (d < 180) return 2;
+    if (d < 270) return 3;
+    return 4;
+  }
+  const ASTC = ['','All (+)','sin (+)','tan (+)','cos (+)'];
+  const ASTC_CLS = ['','aq1','aq2','aq3','aq4'];
 
-    // Radius
-    CK.line(ctx,ccx,ccy,px,py,'#3B82F6',2);
-    CK.dot(ctx,px,py,5,'#06B6D4');
+  function draw() {
+    const rad = angle * D2R;
+    const s = M.sin(rad), c = M.cos(rad);
+    const t = M.abs(c) < 1e-9 ? Infinity : s / c;
+    const signCs = c >= -1e-9 ? '+' : '-', signSs = s >= -1e-9 ? '+' : '-';
 
-    // Tangent line at (1,0) on the circle — extending vertically
-    if(M.abs(cosV)>0.01){
-      const tanPx=ccx+R,tanPy=ccy-R*tanV;
-      const tanClamp=MathE.clamp(tanPy,ccy-h*0.45,ccy+h*0.45);
-      CK.line(ctx,ccx+R,ccy-h*0.45,ccx+R,ccy+h*0.45,'rgba(245,158,11,0.15)',1);
-      CK.line(ctx,ccx,ccy,ccx+R,tanClamp,'#F59E0B',1.5);
-      CK.dot(ctx,ccx+R,tanClamp,4,'#F59E0B');
-      CK.text(ctx,'tan',ccx+R+10,tanClamp,'#F59E0B','10px JetBrains Mono,monospace','left');
-    }
+    bS.set(fmt(s)); bC.set(fmt(c)); bT.set(fmt(t));
+    bCsc.set(M.abs(s) < 1e-9 ? 'Undef' : fmt(1/s));
+    bSec.set(M.abs(c) < 1e-9 ? 'Undef' : fmt(1/c));
+    bCot.set(M.abs(s) < 1e-9 ? 'Undef' : fmt(c/s));
 
-    // Projections
-    CK.line(ctx,ccx,ccy,px,ccy,'#22C55E',1.5);
-    CK.line(ctx,px,ccy,px,py,'#EF4444',1.5);
+    const qn = getQuadrant(angle);
+    astcEl.className = 'astc ' + ASTC_CLS[qn];
+    astcEl.textContent = 'Q' + qn + ' · ' + ASTC[qn];
 
-    CK.text(ctx,'Unit Circle',ccx,16,'#64748B','11px Inter,sans-serif');
+    const sinSign = s>=0?'(+)':'(−)', cosSign = c>=0?'(+)':'(−)', tanSign = (s*c>=0)?'(+)':'(−)';
+    expBox.innerHTML = `<strong>Q${qn}: ${ASTC[qn]}</strong><br>
+      sin θ = ${signSs}${fmt(Math.abs(s))} ${sinSign}<br>
+      cos θ = ${signCs}${fmt(Math.abs(c))} ${cosSign}<br>
+      tan θ = ${s<0&&c<0?'(−)/(−)=':s>=0&&c>=0?'(+)/(+)=':s>=0?'(+)/(−)=':'(−)/(+)='}${tanSign}<br>
+      (x,y) = (cosθ, sinθ)`;
 
-    // ── Tan Graph (right) ──
-    const gL=splitX+20,gR=w-20,gW=gR-gL;
-    const gT=40,gB=h-30,gH=gB-gT;
-    const gCx=(gL+gR)/2,gCy=(gT+gB)/2;
+    const { x, w, h } = CK.setup(canvas);
+    if (w <= 0 || h <= 0) return;
+    CK.clr(x, w, h);
+    const cx = w*.5, cy = h*.5, R = M.min(w,h)*.36;
 
-    // Graph axes
-    CK.line(ctx,gL,gCy,gR,gCy,'rgba(186,230,253,0.15)',1);
-    CK.line(ctx,gCx,gT,gCx,gB,'rgba(186,230,253,0.15)',1);
+    CK.grid(x, cx, cy, w, h, R/3);
 
-    // X range: -2π to 2π
-    const xMin=-2*PI,xMax=2*PI;
-    const xScale=gW/(xMax-xMin);
-    const yClamp=6;
-    const yScale=gH/(2*yClamp);
-
-    // X-axis labels
-    const xLabels=[[-2*PI,'-2π'],[-1.5*PI,'-3π/2'],[-PI,'-π'],[-PI/2,'-π/2'],[0,'0'],[PI/2,'π/2'],[PI,'π'],[1.5*PI,'3π/2'],[2*PI,'2π']];
-    xLabels.forEach(([xv,label])=>{
-      const sx=gCx+xv*xScale;
-      CK.line(ctx,sx,gCy-3,sx,gCy+3,'#64748B',1);
-      CK.text(ctx,label,sx,gCy+14,'#64748B','9px JetBrains Mono,monospace');
+    const qColors = ['','rgba(52,216,139,0.06)','rgba(59,130,246,0.06)','rgba(255,188,66,0.06)','rgba(255,107,122,0.06)'];
+    [[0,-M.PI/2,qColors[1]],[M.PI/2,0,qColors[4]],[M.PI,M.PI/2,qColors[3]],[-M.PI/2,-M.PI,qColors[2]]].forEach(([a1,a2,col])=>{
+      x.beginPath(); x.moveTo(cx,cy); x.arc(cx,cy,R,a1,a2,true); x.closePath();
+      x.fillStyle = col; x.fill();
     });
 
-    // Asymptotes at ±π/2, ±3π/2
-    const asymptotes=[-1.5*PI,-0.5*PI,0.5*PI,1.5*PI];
-    asymptotes.forEach(xv=>{
-      const sx=gCx+xv*xScale;
-      CK.line(ctx,sx,gT,sx,gB,'rgba(239,68,68,0.3)',1.5,[6,4]);
+    const ql=['+All', '+Sin', '+Tan', '+Cos'];
+    [[cx+R*.55,cy-R*.55],[cx-R*.55,cy-R*.55],[cx-R*.55,cy+R*.55],[cx+R*.55,cy+R*.55]].forEach(([lx,ly],i)=>{
+      CK.txt(x, ql[i], lx, ly, 'rgba(186,230,253,0.35)', '12px JetBrains Mono,monospace');
     });
 
-    // Plot tan(x)
-    ctx.beginPath();ctx.strokeStyle='#F59E0B';ctx.lineWidth=2;
-    let moved=false;
-    for(let px2=0;px2<=gW;px2+=1){
-      const x=(px2/gW)*(xMax-xMin)+xMin;
-      const y=M.tan(x);
-      if(!isFinite(y)||M.abs(y)>yClamp){moved=false;continue}
-      const sx=gL+px2,sy=gCy-y*yScale;
-      if(!moved){ctx.moveTo(sx,sy);moved=true}else ctx.lineTo(sx,sy);
-    }
-    ctx.stroke();
+    CK.circ(x, cx, cy, R, 'rgba(59,130,246,0.35)', 1.8);
+    CK.axes(x, cx, cy, w, h);
 
-    // Current angle marker on graph
-    const normRad=rad;
-    if(normRad>=xMin&&normRad<=xMax&&isFinite(tanV)&&M.abs(tanV)<=yClamp){
-      const mx=gCx+normRad*xScale,my=gCy-tanV*yScale;
-      CK.dot(ctx,mx,my,6,'#06B6D4');
-      CK.line(ctx,mx,gCy,mx,my,'#06B6D4',1,[3,3]);
-      CK.text(ctx,'('+angle+'°, '+(M.abs(tanV)<100?tanV.toFixed(2):'±∞')+')',mx+8,my-10,'#06B6D4','10px JetBrains Mono,monospace','left');
-    }
+    CK.txt(x,'1',cx+R+14,cy,'#4A7FA8','11px JetBrains Mono,monospace');
+    CK.txt(x,'-1',cx-R-18,cy,'#4A7FA8','11px JetBrains Mono,monospace');
+    CK.txt(x,'1',cx+4,cy-R-10,'#4A7FA8','11px JetBrains Mono,monospace');
+    CK.txt(x,'-1',cx+4,cy+R+14,'#4A7FA8','11px JetBrains Mono,monospace');
 
-    CK.text(ctx,'y = tan(x)',gCx,gT-8,'#F59E0B','12px Inter,sans-serif');
+    const px = cx + R*c, py = cy - R*s;
 
-    // Update badges
-    bSin.update(MathE.fmtN(sinV,6));bCos.update(MathE.fmtN(cosV,6));bTan.update(MathE.fmtN(tanV,6));
+    CK.ln(x, cx, cy, px, cy, '#22C55E', 2, [4,4]);
+    CK.ln(x, px, cy, px, py, '#EF4444', 2, [4,4]);
+
+    const signX = c >= 0 ? '+x' : '-x', signY = s >= 0 ? '+y' : '-y';
+    CK.txt(x, 'cos='+signX, cx+(px-cx)/2, cy+15, '#22C55E', '10px JetBrains Mono,monospace');
+    CK.txt(x, 'sin='+signY, px+(c>=0?22:-24), cy+(py-cy)/2, '#EF4444', '10px JetBrains Mono,monospace');
+
+    CK.arr(x, cx, cy, px, py, '#3B82F6', 2.5);
+
+    CK.arc(x, cx, cy, R*.14, 0, -rad, '#06B6D4', 1.5, true);
+    CK.txt(x, angle+'°', cx+R*.22, cy-R*.05, '#06B6D4', '11px JetBrains Mono,monospace');
+
+    CK.dot(x, px, py, 6, '#06B6D4'); CK.dot(x, px, py, 3, '#fff');
+
+    CK.txt(x, '('+signCs+fmt(Math.abs(c),3)+', '+signSs+fmt(Math.abs(s),3)+')',
+      px + (c>=0?14:-14), py-16, '#C8E8FF', '10px JetBrains Mono,monospace', c>=0?'left':'right');
   }
 
-  draw();
-  Nav.onShow['mod-9']=()=>draw();
+  function startDrag(e) {
+    const p = getPointerPos(e, canvas);
+    const cx=p.w*.5,cy=p.h*.5,R=M.min(p.w,p.h)*.36;
+    const px=cx+R*M.cos(angle*D2R),py=cy-R*M.sin(angle*D2R);
+    if(M.hypot(p.x-px,p.y-py)<24) dragging=true;
+  }
+  function moveDrag(e) {
+    if(!dragging)return;
+    const p = getPointerPos(e, canvas);
+    let a=M.atan2(-(p.y-p.h*.5),p.x-p.w*.5)*R2D;
+    if(a<0)a+=360; angle=M.round(a); sA.set(angle);
+  }
+  canvas.addEventListener('mousedown', startDrag);
+  canvas.addEventListener('touchstart', startDrag, { passive: true });
+  window.addEventListener('mousemove', moveDrag);
+  window.addEventListener('touchmove', moveDrag, { passive: true });
+  window.addEventListener('mouseup',()=>dragging=false);
+  window.addEventListener('touchend',()=>dragging=false);
+
+  onShow['v7'] = draw;
 }
 
-/* ═══════════════════════════════════════════
-   MODULE 10 — Compound Angle Identity Visualizer
-   ═══════════════════════════════════════════ */
-function initMod10(){
-  const body=document.getElementById('mod-10-body');
-  const{wrap,canvas}=UI.canvas(body,'comp-canvas');
-  const cp=UI.el('div','controls-panel',body);
+/* ══════════════════════════════════════════════════
+   MODULE 8 · Even vs Odd Function Mirror
+══════════════════════════════════════════════════ */
+function initM8() {
+  const body = document.getElementById('b8');
+  const { canvas } = UI.canvas(body, 'c8');
+  const cp = UI.el('div', 'cp', body);
 
-  let A=30,B=25;
-  const sA=UI.slider(cp,'Angle A (°)',0,80,1,A,v=>{A=v;draw()});
-  const sB=UI.slider(cp,'Angle B (°)',0,80,1,B,v=>{B=v;draw()});
-
-  UI.sep(cp);
-  UI.el('label','',cp,'Identities');
-  const sinBox=UI.el('div','euler-box',cp);
-  const cosBox=UI.el('div','euler-box',cp);
+  let angle = 50;
+  const sA = UI.slider(cp, 'Angle θ (°)', 0, 90, 1, angle, v => { angle = v; draw(); });
+  UI.pills(cp, ['20°','30°','45°','60°','75°'], (i) => {
+    angle = [20,30,45,60,75][i]; sA.set(angle);
+  }, 2);
 
   UI.sep(cp);
-  const bRow=UI.el('div','badge-row',cp);
-  const bSinAB=UI.badge(bRow,'sin(A+B)','—');
-  const bCosAB=UI.badge(bRow,'cos(A+B)','—');
+  const br = UI.el('div', 'br', cp);
+  const bS  = UI.badge(br, 'sin θ', '—');
+  const bSN = UI.badge(br, 'sin(−θ)', '—');
+  const br2 = UI.el('div', 'br', cp);
+  const bC  = UI.badge(br2, 'cos θ', '—');
+  const bCN = UI.badge(br2, 'cos(−θ)', '—');
 
   UI.sep(cp);
-  UI.el('label','',cp,'Component Values');
-  const bRow2=UI.el('div','badge-row',cp);
-  const bSinA=UI.badge(bRow2,'sin A','—');
-  const bCosA=UI.badge(bRow2,'cos A','—');
-  const bSinB=UI.badge(bRow2,'sin B','—');
-  const bCosB=UI.badge(bRow2,'cos B','—');
+  UI.el('div', 'eb', cp, '<strong>Even Function (cos):</strong><br>cos(−θ) = cos θ<br>Horizontal projections overlap<br><br><strong>Odd Function (sin):</strong><br>sin(−θ) = −sin θ<br>Vertical projections mirror across x-axis');
 
-  function draw(){
-    const{ctx,w,h}=CK.setup(canvas);CK.clear(ctx,w,h);
-    const cx=w*0.35,cy=h*0.7;
-    const R=M.min(w*0.55,h*0.55);
+  function draw() {
+    const rad = angle * D2R;
+    const s = M.sin(rad), c = M.cos(rad);
+    bS.set(fmt(s)); bSN.set(fmt(-s));
+    bC.set(fmt(c)); bCN.set(fmt(c));
 
-    CK.grid(ctx,cx,cy,w,h,R/4);
+    const { x, w, h } = CK.setup(canvas);
+    if (w <= 0 || h <= 0) return;
+    CK.clr(x, w, h);
+    const cx = w*.45, cy = h*.52, R = M.min(w,h)*.36;
 
-    const radA=MathE.toRad(A),radB=MathE.toRad(B),radAB=radA+radB;
-    const sinA=M.sin(radA),cosA=M.cos(radA),sinB=M.sin(radB),cosB=M.cos(radB);
-    const sinAB=M.sin(radAB),cosAB=M.cos(radAB);
+    CK.grid(x, cx, cy, w, h, R/3);
+    CK.circ(x, cx, cy, R, 'rgba(59,130,246,0.3)', 1.5);
+    CK.axes(x, cx, cy, w, h);
 
-    // ── Geometric Construction ──
-    // Draw a large right triangle for angle (A+B) from horizontal
-    // Then decompose it using stacked triangles
+    const px1 = cx + R*c, py1 = cy - R*s;
+    const px2 = cx + R*c, py2 = cy + R*s;
 
-    // Outer triangle: angle (A+B) with hypotenuse R
-    const Px=cx+R*cosAB, Py=cy-R*sinAB; // tip point
-    const Fx=cx+R*cosAB, Fy=cy; // foot on x-axis
+    CK.ln(x, cx, cy, px1, cy, '#22C55E', 2.5);
+    CK.ln(x, cx, cy, px2, cy, 'rgba(34,197,94,0.35)', 4);
 
-    // First, draw the construction:
-    // Triangle 1: angle A from horizontal, hypotenuse = R
-    const Qx=cx+R*cosA, Qy=cy-R*sinA;
+    CK.ln(x, px1, cy, px1, py1, '#06B6D4', 2.5);
+    CK.ln(x, px2, cy, px2, py2, '#EF4444', 2.5, [6,3]);
 
-    // From Q, draw angle B triangle
-    // The compound angle visualization uses a rectangle approach:
-    // Start with point on unit circle at angle (A+B)
+    CK.arr(x, cx, cy, px1, py1, '#3B82F6', 2.2);
+    CK.arr(x, cx, cy, px2, py2, '#6366F1', 2.2);
 
-    // Base line (horizontal)
-    CK.line(ctx,cx,cy,cx+R,cy,'rgba(186,230,253,0.12)',1);
+    CK.arc(x, cx, cy, R*.16, 0, -rad, '#06B6D4', 1.5, true);
+    CK.arc(x, cx, cy, R*.21, 0, rad, '#F59E0B', 1.5, false);
+    CK.txt(x, '+θ='+angle+'°', cx+R*.28, cy-R*.06, '#06B6D4', '11px JetBrains Mono,monospace');
+    CK.txt(x, '-θ='+(-angle)+'°', cx+R*.34, cy+R*.1, '#F59E0B', '11px JetBrains Mono,monospace');
 
-    // Angle A arc
-    CK.arc(ctx,cx,cy,R*0.12,0,-radA,'#22C55E',2,true);
-    CK.text(ctx,'A',cx+R*0.16,cy-R*0.04,'#22C55E','11px JetBrains Mono,monospace');
+    CK.dot(x, px1, py1, 7, '#3B82F6'); CK.dot(x, px1, py1, 3, '#fff');
+    CK.dot(x, px2, py2, 7, '#6366F1'); CK.dot(x, px2, py2, 3, '#fff');
 
-    // Angle B arc
-    CK.arc(ctx,cx,cy,R*0.2,-radA,-radAB,'#EF4444',2,true);
-    CK.text(ctx,'B',cx+R*0.18*M.cos(radA+radB/2),cy-R*0.24*M.sin(radA+radB/2),'#EF4444','11px JetBrains Mono,monospace');
+    CK.txt(x, 'cos θ = cos(−θ) = '+fmt(c), (cx+px1)/2, cy+18, '#22C55E', '10px JetBrains Mono,monospace');
+    CK.txt(x, 'sin θ = '+fmt(s), px1+12, cy+(py1-cy)/2, '#06B6D4', '10px JetBrains Mono,monospace', 'left');
+    CK.txt(x, 'sin(−θ) = '+fmt(-s), px2+12, cy+(py2-cy)/2, '#EF4444', '10px JetBrains Mono,monospace', 'left');
 
-    // Main hypotenuse line (radius at A+B)
-    CK.line(ctx,cx,cy,Px,Py,'#3B82F6',2.5);
-
-    // Vertical drop from P to x-axis: this is sin(A+B)*R
-    CK.line(ctx,Px,Py,Px,cy,'rgba(239,68,68,0.6)',2,[4,4]);
-    CK.text(ctx,'sin(A+B)·R',Px+10,(Py+cy)/2,'#EF4444','10px JetBrains Mono,monospace','left');
-
-    // Horizontal distance: cos(A+B)*R
-    CK.line(ctx,cx,cy+10,Px,cy+10,'rgba(34,197,94,0.6)',1.5);
-    CK.text(ctx,'cos(A+B)·R',(cx+Px)/2,cy+24,'#22C55E','10px JetBrains Mono,monospace');
-
-    // ── Decomposition: show the intermediate construction ──
-    // Line at angle A
-    CK.line(ctx,cx,cy,Qx,Qy,'rgba(34,197,94,0.3)',1.5,[4,4]);
-
-    // Perpendicular from P to the line at angle A
-    // Project P onto the line OQ
-    const projLen=R*cosB; // length of projection on OA direction
-    const Hx=cx+projLen*cosA, Hy=cy-projLen*sinA; // foot of perpendicular from P to OQ
-
-    // Line from P perpendicular to OQ
-    CK.line(ctx,Px,Py,Hx,Hy,'rgba(168,85,247,0.5)',1.5,[3,3]);
-
-    // The perpendicular from H down to x-axis
-    CK.line(ctx,Hx,Hy,Hx,cy,'rgba(6,182,212,0.3)',1,[3,3]);
-
-    // Key segment labels for the identity proof
-    // sin(A+B) = sin(A)cos(B) + cos(A)sin(B)
-    // cos(A+B) = cos(A)cos(B) - sin(A)sin(B)
-
-    // Segment: sinA*cosB (vertical component of H)
-    const sacb=sinA*cosB*R;
-    // Segment: cosA*sinB (remaining vertical from H to P)
-    const casb=cosA*sinB*R;
-
-    // Mark the vertical decomposition
-    // From Px,cy to Hx,Hy is one part, Hx,Hy to Px,Py is another
-    // Actually, let's show it simply: total vertical = sinA*cosB + cosA*sinB
-
-    // Right side of canvas: show the formula verification
-    const vx=w*0.72,vy=50;
-    CK.text(ctx,'Verification:',vx,vy,'#94A3B8','12px Inter,sans-serif');
-
-    // sin(A+B) calculation
-    const sinDirect=sinAB.toFixed(6);
-    const sinFormula=(sinA*cosB+cosA*sinB).toFixed(6);
-    CK.text(ctx,'sin(A+B) = '+sinDirect,vx,vy+24,'#EF4444','11px JetBrains Mono,monospace');
-    CK.text(ctx,'sinA·cosB + cosA·sinB = '+sinFormula,vx,vy+42,'#EF4444','10px JetBrains Mono,monospace');
-    const sinMatch=M.abs(sinAB-(sinA*cosB+cosA*sinB))<1e-10;
-    CK.text(ctx,sinMatch?'✓ Match':'✗ Error',vx+180,vy+33,sinMatch?'#22C55E':'#EF4444','12px Inter,sans-serif');
-
-    // cos(A+B) calculation
-    const cosDirect=cosAB.toFixed(6);
-    const cosFormula=(cosA*cosB-sinA*sinB).toFixed(6);
-    CK.text(ctx,'cos(A+B) = '+cosDirect,vx,vy+72,'#22C55E','11px JetBrains Mono,monospace');
-    CK.text(ctx,'cosA·cosB − sinA·sinB = '+cosFormula,vx,vy+90,'#22C55E','10px JetBrains Mono,monospace');
-    const cosMatch=M.abs(cosAB-(cosA*cosB-sinA*sinB))<1e-10;
-    CK.text(ctx,cosMatch?'✓ Match':'✗ Error',vx+180,vy+81,cosMatch?'#22C55E':'#EF4444','12px Inter,sans-serif');
-
-    // Point P
-    CK.dot(ctx,Px,Py,6,'#06B6D4');
-    CK.text(ctx,'P',Px+8,Py-10,'#06B6D4','12px JetBrains Mono,monospace');
-
-    // Origin
-    CK.dot(ctx,cx,cy,3,'#BAE6FD');
-    CK.text(ctx,'O',cx-12,cy+12,'#BAE6FD','11px JetBrains Mono,monospace');
-
-    // Labels
-    CK.text(ctx,'A = '+A+'°, B = '+B+'°, A+B = '+(A+B)+'°',w/2,h-12,'#64748B','11px Inter,sans-serif');
-
-    // Update identity boxes
-    sinBox.innerHTML='<strong>sin(A+B)</strong> = sinA·cosB + cosA·sinB<br>= '
-      +sinA.toFixed(4)+'×'+cosB.toFixed(4)+' + '+cosA.toFixed(4)+'×'+sinB.toFixed(4)
-      +' = <strong>'+sinFormula+'</strong>';
-    cosBox.innerHTML='<strong>cos(A+B)</strong> = cosA·cosB − sinA·sinB<br>= '
-      +cosA.toFixed(4)+'×'+cosB.toFixed(4)+' − '+sinA.toFixed(4)+'×'+sinB.toFixed(4)
-      +' = <strong>'+cosFormula+'</strong>';
-
-    // Update badges
-    bSinAB.update(sinDirect);bCosAB.update(cosDirect);
-    bSinA.update(sinA.toFixed(4));bCosA.update(cosA.toFixed(4));
-    bSinB.update(sinB.toFixed(4));bCosB.update(cosB.toFixed(4));
+    CK.txt(x, '← x-axis symmetry axis →', cx, cy-R-18, '#4A7FA8', '10px Inter,sans-serif');
+    CK.txt(x, 'cos(−θ) = cos θ (EVEN)   |   sin(−θ) = −sin θ (ODD)', w/2, h*.07, '#88BFEA', '12px Inter,sans-serif');
   }
 
-  draw();
-  Nav.onShow['mod-10']=()=>draw();
+  onShow['v8'] = draw;
 }
 
-/* ═══════════════════════════════════════════
-   MAIN INITIALIZATION
-   ═══════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded',()=>{
-  initMathBG();
-  Nav.init();
-  initModGrid();
-  initMod1();initMod2();initMod3();initMod4();initMod5();
-  initMod6();initMod7();initMod8();initMod9();initMod10();
+/* ══════════════════════════════════════════════════
+   MODULE 9 · Radian Measure & Arc Length (l = rθ)
+══════════════════════════════════════════════════ */
+function initM9() {
+  const body = document.getElementById('b9');
+  const { canvas } = UI.canvas(body, 'c9', 'tall');
+  const cp = UI.el('div', 'cp', body);
+
+  let radius = 5.0;
+  let deg = 57.3; // Starts at ~1 Radian!
+  let dragging = false;
+
+  UI.slider(cp, 'Radius r (cm)', 2.0, 10.0, 0.5, radius, v => { radius = v; draw(); });
+  const sDeg = UI.slider(cp, 'Angle θ (°)', 10, 360, 0.1, deg, v => { deg = v; draw(); });
+
+  UI.sep(cp);
+  UI.el('label', 'cl', cp, 'Quick Classroom Presets');
+  const presets = [
+    { label: '1 Radian (l=r)', d: 180 / M.PI },
+    { label: '30° (π/6)', d: 30 },
+    { label: '45° (π/4)', d: 45 },
+    { label: '60° (π/3)', d: 60 },
+    { label: '90° (π/2)', d: 90 },
+    { label: '180° (π)', d: 180 }
+  ];
+  UI.pills(cp, presets.map(p => p.label), i => {
+    deg = +presets[i].d.toFixed(1);
+    sDeg.set(deg);
+  }, 0);
+
+  UI.sep(cp);
+  const br = UI.el('div', 'br', cp);
+  const bDeg = UI.badge(br, 'Degrees', '57.3°');
+  const bRad = UI.badge(br, 'Radians θ', '1.00 rad');
+  const bArc = UI.badge(br, 'Arc l = rθ', '5.00 cm');
+  const bSec = UI.badge(br, 'Area ½r²θ', '12.5 cm²');
+
+  UI.sep(cp);
+  const expBox = UI.el('div', 'eb', cp);
+
+  function piFraction(d) {
+    const common = [
+      [30, 'π/6'], [45, 'π/4'], [60, 'π/3'], [90, 'π/2'],
+      [120, '2π/3'], [135, '3π/4'], [150, '5π/6'], [180, 'π'],
+      [270, '3π/2'], [360, '2π']
+    ];
+    for (const [ang, str] of common) {
+      if (M.abs(d - ang) < 0.3) return str + ' rad';
+    }
+    if (M.abs(d - R2D) < 0.35) return '1.00 rad (l = r)';
+    return (d * D2R).toFixed(2) + ' rad';
+  }
+
+  function draw() {
+    const thetaRad = deg * D2R;
+    const arcLen = radius * thetaRad;
+    const sectorArea = 0.5 * radius * radius * thetaRad;
+
+    bDeg.set(deg.toFixed(1) + '°');
+    bRad.set(thetaRad.toFixed(3) + ' rad');
+    bArc.set(arcLen.toFixed(2) + ' cm');
+    bSec.set(sectorArea.toFixed(2) + ' cm²');
+
+    const isOneRad = M.abs(thetaRad - 1) < 0.03;
+    expBox.innerHTML = `<strong>Viva Tip — What is 1 Radian?</strong><br>
+      When Arc Length <span style="color:#EF4444">l</span> equals Radius <span style="color:#22C55E">r</span>, the angle at the center is <strong>1 Radian (≈ 57.3°)</strong>.<br><br>
+      Formula: <strong>θ (rad) = l / r  ⇒  l = r·θ</strong><br>
+      180° = π rad ≈ 3.1416 radii!<br>
+      ${isOneRad ? '<span style="color:#34D88B">★ Right now: l = r, so θ = 1 Radian!</span>' : ''}`;
+
+    const { x, w, h } = CK.setup(canvas);
+    if (w <= 0 || h <= 0) return;
+    CK.clr(x, w, h);
+
+    const cx = w * 0.5, cy = h * 0.42;
+    const maxR = M.min(w, h * 0.78) * 0.36;
+    const Rpx = maxR * (0.48 + 0.52 * (radius / 10));
+
+    CK.grid(x, cx, cy, w, h, 45);
+    CK.axes(x, cx, cy, w, h * 0.78);
+
+    // Sector shaded area
+    x.beginPath();
+    x.moveTo(cx, cy);
+    x.arc(cx, cy, Rpx, 0, -thetaRad, true);
+    x.closePath();
+    x.fillStyle = isOneRad ? 'rgba(52,216,139,0.13)' : 'rgba(59,130,246,0.10)';
+    x.fill();
+
+    // Full circle outline
+    CK.circ(x, cx, cy, Rpx, 'rgba(59,130,246,0.28)', 1.5);
+
+    // Glowing Curved Arc l
+    x.save();
+    x.beginPath();
+    x.arc(cx, cy, Rpx, 0, -thetaRad, true);
+    x.strokeStyle = '#EF4444';
+    x.lineWidth = 4.5;
+    x.shadowColor = '#EF4444';
+    x.shadowBlur = 12;
+    x.stroke();
+    x.restore();
+
+    // Base Radius r (Green)
+    CK.ln(x, cx, cy, cx + Rpx, cy, '#22C55E', 3);
+    CK.txt(x, 'Radius r = ' + radius.toFixed(1) + ' cm', cx + Rpx * 0.5, cy + 18, '#34D88B', '11px JetBrains Mono,monospace');
+
+    // Rotating Radius vector
+    const px = cx + Rpx * M.cos(thetaRad);
+    const py = cy - Rpx * M.sin(thetaRad);
+    CK.arr(x, cx, cy, px, py, '#06B6D4', 2.5);
+
+    // Inner angle arc
+    const innerR = M.min(38, Rpx * 0.35);
+    CK.arc(x, cx, cy, innerR, 0, -thetaRad, '#FFBC42', 2, true);
+    const midA = thetaRad * 0.5;
+    CK.txt(x, deg.toFixed(1) + '° (' + piFraction(deg) + ')',
+      cx + (innerR + 46) * M.cos(midA), cy - (innerR + 22) * M.sin(midA),
+      '#FFBC42', '11px JetBrains Mono,monospace');
+
+    // Arc label on outside of curve
+    const arcLblR = Rpx + 24;
+    CK.txt(x, 'Arc l = ' + arcLen.toFixed(2) + ' cm',
+      cx + arcLblR * M.cos(midA), cy - arcLblR * M.sin(midA),
+      '#FF6B7A', '12px JetBrains Mono,monospace');
+
+    // Draggable handle
+    CK.dot(x, px, py, 7, '#06B6D4');
+    CK.dot(x, px, py, 3, '#fff');
+
+    // Top banner formula
+    CK.txt(x, `l = r × θ   ⇒   ${arcLen.toFixed(2)} cm = ${radius.toFixed(1)} cm × ${thetaRad.toFixed(2)} rad`,
+      w / 2, 20, '#BAE6FD', '13px JetBrains Mono,monospace');
+
+    // ── BOTTOM VISUAL RULER: UNROLLED ARC vs RADIUS ──
+    const boxY = h * 0.80, boxH = h * 0.16;
+    const padX = 40, barMaxW = w - padX * 2;
+    x.fillStyle = 'rgba(10,20,42,0.85)';
+    x.strokeStyle = 'rgba(56,189,248,0.22)';
+    x.lineWidth = 1;
+    x.beginPath();
+    x.roundRect ? x.roundRect(padX - 16, boxY - 12, barMaxW + 32, boxH + 12, 8) : x.rect(padX - 16, boxY - 12, barMaxW + 32, boxH + 12);
+    x.fill(); x.stroke();
+
+    CK.txt(x, 'UNROLLED RULER: How many Radii (r) fit inside Arc Length (l)?   [ θ = l / r = ' + thetaRad.toFixed(2) + ' radii ]',
+      w / 2, boxY + 4, '#88BFEA', '11px Inter,sans-serif');
+
+    const unitRWidth = barMaxW / TAU;
+    const rBarY = boxY + 24;
+    const lBarY = boxY + 48;
+
+    x.fillStyle = 'rgba(34,197,94,0.28)';
+    x.strokeStyle = '#22C55E'; x.lineWidth = 1.5;
+    x.fillRect(padX, rBarY, unitRWidth, 12);
+    x.strokeRect(padX, rBarY, unitRWidth, 12);
+    CK.txt(x, '1 Radius (r = ' + radius.toFixed(1) + ' cm)', padX + unitRWidth + 10, rBarY + 6, '#34D88B', '10px JetBrains Mono,monospace', 'left');
+
+    const arcBarW = clamp(thetaRad * unitRWidth, 2, barMaxW);
+    x.fillStyle = 'rgba(239,68,68,0.32)';
+    x.strokeStyle = '#EF4444'; x.lineWidth = 1.5;
+    x.fillRect(padX, lBarY, arcBarW, 14);
+    x.strokeRect(padX, lBarY, arcBarW, 14);
+
+    for (let k = 1; k <= 6; k++) {
+      const tx = padX + k * unitRWidth;
+      CK.ln(x, tx, lBarY - 3, tx, lBarY + 17, 'rgba(255,255,255,0.35)', 1, [2, 2]);
+      CK.txt(x, k + 'r', tx, lBarY + 24, '#4A7FA8', '9px JetBrains Mono,monospace');
+    }
+    const piX = padX + M.PI * unitRWidth;
+    CK.ln(x, piX, lBarY - 4, piX, lBarY + 18, '#FFBC42', 1.2);
+    CK.txt(x, 'πr (180°)', piX, lBarY - 9, '#FFBC42', '9px JetBrains Mono,monospace');
+
+    CK.txt(x, 'Unrolled Arc l = ' + thetaRad.toFixed(2) + ' × r',
+      M.min(padX + arcBarW + 10, w - 115), lBarY + 7, '#FF6B7A', '10px JetBrains Mono,monospace', 'left');
+  }
+
+  function startDrag(e) {
+    const p = getPointerPos(e, canvas);
+    const cx = p.w * 0.5, cy = p.h * 0.42;
+    const maxR = M.min(p.w, p.h * 0.78) * 0.36;
+    const Rpx = maxR * (0.48 + 0.52 * (radius / 10));
+    const px = cx + Rpx * M.cos(deg * D2R), py = cy - Rpx * M.sin(deg * D2R);
+    if (M.hypot(p.x - px, p.y - py) < 28) dragging = true;
+  }
+  function moveDrag(e) {
+    if (!dragging) return;
+    const p = getPointerPos(e, canvas);
+    const cx = p.w * 0.5, cy = p.h * 0.42;
+    let a = M.atan2(-(p.y - cy), p.x - cx) * R2D;
+    if (a < 0) a += 360;
+    deg = clamp(+a.toFixed(1), 10, 360);
+    sDeg.set(deg);
+  }
+  canvas.addEventListener('mousedown', startDrag);
+  canvas.addEventListener('touchstart', startDrag, { passive: true });
+  window.addEventListener('mousemove', moveDrag);
+  window.addEventListener('touchmove', moveDrag, { passive: true });
+  window.addEventListener('mouseup', () => dragging = false);
+  window.addEventListener('touchend', () => dragging = false);
+
+  onShow['v9'] = draw;
+}
+
+/* ══════════════════════════════════════════════════
+   MODULE 10 · Compound Angle Proof: sin(A+B) & cos(A+B)
+══════════════════════════════════════════════════ */
+function initM10() {
+  const body = document.getElementById('b10');
+  const { canvas } = UI.canvas(body, 'c10', 'tall');
+  const cp = UI.el('div', 'cp', body);
+
+  let angA = 45, angB = 30, fnMode = 0; // 0 = sin(A+B), 1 = cos(A+B)
+
+  UI.el('label', 'cl', cp, 'Identity to Prove');
+  UI.pills(cp, ['sin(A + B)', 'cos(A + B)'], i => { fnMode = i; draw(); }, 0);
+
+  UI.sep(cp);
+  const sA = UI.slider(cp, 'Angle A (°)', 5, 60, 1, angA, v => { angA = v; draw(); });
+  const sB = UI.slider(cp, 'Angle B (°)', 5, 60, 1, angB, v => { angB = v; draw(); });
+
+  UI.sep(cp);
+  UI.el('label', 'cl', cp, 'Famous Exam Examples');
+  const exPresets = [
+    { label: '45°+30° = 75°', a: 45, b: 30 },
+    { label: '30°+60° = 90°', a: 30, b: 60 },
+    { label: '45°+45° = 90°', a: 45, b: 45 },
+    { label: '30°+30° = 60°', a: 30, b: 30 }
+  ];
+  UI.pills(cp, exPresets.map(p => p.label), i => {
+    angA = exPresets[i].a; angB = exPresets[i].b;
+    sA.set(angA); sB.set(angB);
+  }, 0);
+
+  UI.sep(cp);
+  const br = UI.el('div', 'br', cp);
+  const bSumAng = UI.badge(br, 'A + B', '75°');
+  const bWrong  = UI.badge(br, 'Wrong Sum', '—');
+  const bTrue   = UI.badge(br, 'True Value', '—');
+
+  UI.sep(cp);
+  const solBox = UI.el('div', 'eb', cp);
+
+  function draw() {
+    const sumDeg = angA + angB;
+    const rA = angA * D2R, rB = angB * D2R, rSum = sumDeg * D2R;
+    const sAVal = M.sin(rA), cAVal = M.cos(rA);
+    const sBVal = M.sin(rB), cBVal = M.cos(rB);
+
+    const isSin = fnMode === 0;
+    const naiveVal = isSin ? (sAVal + sBVal) : (cAVal + cBVal);
+    const trueVal  = isSin ? M.sin(rSum) : M.cos(rSum);
+    const part1    = isSin ? (sAVal * cBVal) : (cAVal * cBVal);
+    const part2    = isSin ? (cAVal * sBVal) : (sAVal * sBVal);
+
+    bSumAng.set(sumDeg + '°');
+    bWrong.set(fmt(naiveVal, 3));
+    bTrue.set(fmt(trueVal, 4));
+
+    if (isSin) {
+      solBox.innerHTML = `<strong>Why sin(A+B) ≠ sin A + sin B:</strong><br>
+        ❌ Wrong: sin ${angA}° + sin ${angB}° = <span style="color:#FF6B7A">${fmt(naiveVal,3)}</span><br>
+        ✅ True: <strong>sin A cos B + cos A sin B</strong><br>
+        = (${fmt(sAVal,2)})(${fmt(cBVal,2)}) + (${fmt(cAVal,2)})(${fmt(sBVal,2)})<br>
+        = ${fmt(part1,3)} + ${fmt(part2,3)} = <span style="color:#34D88B">${fmt(trueVal,4)}</span>` +
+        (sumDeg === 75 ? `<br><span style="color:#FFBC42">★ Exact sin 75° = (√6 + √2)/4 ≈ 0.9659</span>` : '');
+    } else {
+      solBox.innerHTML = `<strong>Why cos(A+B) ≠ cos A + cos B:</strong><br>
+        ❌ Wrong: cos ${angA}° + cos ${angB}° = <span style="color:#FF6B7A">${fmt(naiveVal,3)}</span><br>
+        ✅ True: <strong>cos A cos B − sin A sin B</strong><br>
+        = (${fmt(cAVal,2)})(${fmt(cBVal,2)}) − (${fmt(sAVal,2)})(${fmt(sBVal,2)})<br>
+        = ${fmt(part1,3)} − ${fmt(part2,3)} = <span style="color:#34D88B">${fmt(trueVal,4)}</span>` +
+        (sumDeg === 75 ? `<br><span style="color:#FFBC42">★ Exact cos 75° = (√6 − √2)/4 ≈ 0.2588</span>` : '');
+    }
+
+    const { x, w, h } = CK.setup(canvas);
+    if (w <= 0 || h <= 0) return;
+    CK.clr(x, w, h);
+
+    const ox = w * 0.10, oy = h * 0.82;
+    const R = M.min(w * 0.46, h * 0.68);
+
+    CK.grid(x, ox, oy, w, h, 45);
+    CK.ln(x, ox - 15, oy, ox + R + 25, oy, 'rgba(168,212,245,0.28)', 1.5);
+    CK.ln(x, ox, oy + 15, ox, oy - R - 25, 'rgba(168,212,245,0.28)', 1.5);
+
+    CK.arc(x, ox, oy, R, 0, -M.PI / 2, 'rgba(59,130,246,0.28)', 1.5, true);
+
+    const Qx = ox + R * cBVal * cAVal;
+    const Qy = oy - R * cBVal * sAVal;
+    const Px = ox + R * M.cos(rSum);
+    const Py = oy - R * M.sin(rSum);
+
+    x.beginPath(); x.moveTo(ox, oy); x.lineTo(Qx, oy); x.lineTo(Qx, Qy); x.closePath();
+    x.fillStyle = 'rgba(34,197,94,0.09)'; x.fill();
+    CK.ln(x, ox, oy, Qx, oy, '#22C55E', 2);
+    CK.ln(x, Qx, oy, Qx, Qy, '#22C55E', 2.2);
+    CK.ln(x, ox, oy, Qx, Qy, '#06B6D4', 2);
+
+    x.beginPath(); x.moveTo(ox, oy); x.lineTo(Qx, Qy); x.lineTo(Px, Py); x.closePath();
+    x.fillStyle = 'rgba(99,102,241,0.12)'; x.fill();
+    CK.ln(x, Qx, Qy, Px, Py, '#A855F7', 2.2);
+    CK.arr(x, ox, oy, Px, Py, '#3B82F6', 2.8);
+
+    CK.ln(x, Px, oy, Px, Qy, '#22C55E', 3);
+    CK.ln(x, Px, Qy, Px, Py, '#F59E0B', 3);
+    CK.ln(x, Qx, Qy, Px, Qy, 'rgba(186,230,253,0.35)', 1, [4, 4]);
+
+    CK.arc(x, ox, oy, 38, 0, -rA, '#22C55E', 1.8, true);
+    CK.txt(x, 'A=' + angA + '°', ox + 55 * M.cos(rA * 0.5), oy - 55 * M.sin(rA * 0.5), '#34D88B', '11px JetBrains Mono,monospace');
+
+    CK.arc(x, ox, oy, 62, -rA, -rSum, '#A855F7', 1.8, true);
+    const midB = rA + rB * 0.5;
+    CK.txt(x, 'B=' + angB + '°', ox + 80 * M.cos(midB), oy - 80 * M.sin(midB), '#B48EFF', '11px JetBrains Mono,monospace');
+
+    CK.txt(x, 'Hypotenuse = 1', (ox + Px) * 0.5 - 24, (oy + Py) * 0.5 - 12, '#3B82F6', '11px JetBrains Mono,monospace');
+    CK.txt(x, 'sinA·cosB', Px - 38, (oy + Qy) * 0.5, '#34D88B', '10px JetBrains Mono,monospace');
+    CK.txt(x, 'cosA·sinB', Px - 38, (Qy + Py) * 0.5, '#FFBC42', '10px JetBrains Mono,monospace');
+
+    CK.dot(x, Qx, Qy, 5, '#06B6D4');
+    CK.dot(x, Px, Py, 6, '#3B82F6');
+    CK.dot(x, Px, Py, 3, '#fff');
+
+    const bx = w * 0.62, bw = w * 0.34, by = h * 0.16, bh = h * 0.68;
+    x.fillStyle = 'rgba(10,20,42,0.82)';
+    x.strokeStyle = 'rgba(56,189,248,0.2)';
+    x.lineWidth = 1;
+    x.beginPath();
+    x.roundRect ? x.roundRect(bx, by, bw, bh, 10) : x.rect(bx, by, bw, bh);
+    x.fill(); x.stroke();
+
+    CK.txt(x, isSin ? 'PROOF: sin(A+B) vs sinA + sinB' : 'PROOF: cos(A+B) vs cosA + cosB',
+      bx + bw * 0.5, by + 22, '#BAE6FD', '11px JetBrains Mono,monospace');
+
+    const baseLineY = by + bh - 46;
+    const maxScaleH = (bh - 105) / 1.8;
+
+    const oneY = baseLineY - 1.0 * maxScaleH;
+    CK.ln(x, bx + 16, oneY, bx + bw - 16, oneY, 'rgba(56,189,248,0.35)', 1, [4, 4]);
+    CK.txt(x, 'Max Unit Circle = 1.00', bx + bw * 0.5, oneY - 9, '#38D9F5', '9px JetBrains Mono,monospace');
+    CK.ln(x, bx + 16, baseLineY, bx + bw - 16, baseLineY, '#4A7FA8', 1.5);
+
+    const colW = M.min(54, bw * 0.28);
+    const b1x = bx + bw * 0.27 - colW * 0.5;
+    const hNaive = M.max(4, naiveVal * maxScaleH);
+    x.fillStyle = 'rgba(239,68,68,0.28)';
+    x.strokeStyle = '#EF4444'; x.lineWidth = 1.8;
+    x.fillRect(b1x, baseLineY - hNaive, colW, hNaive);
+    x.strokeRect(b1x, baseLineY - hNaive, colW, hNaive);
+    CK.txt(x, '❌ ' + fmt(naiveVal, 3), b1x + colW * 0.5, baseLineY - hNaive - 12, '#FF6B7A', '11px JetBrains Mono,monospace');
+    CK.txt(x, isSin ? 'sinA + sinB' : 'cosA + cosB', b1x + colW * 0.5, baseLineY + 16, '#FF6B7A', '10px JetBrains Mono,monospace');
+    CK.txt(x, '(Wrong!)', b1x + colW * 0.5, baseLineY + 30, '#FF6B7A', '9px Inter,sans-serif');
+
+    const b2x = bx + bw * 0.73 - colW * 0.5;
+    const hTrue = M.max(4, M.abs(trueVal) * maxScaleH);
+    if (isSin) {
+      const hP1 = part1 * maxScaleH;
+      const hP2 = part2 * maxScaleH;
+      x.fillStyle = 'rgba(34,197,94,0.35)';
+      x.strokeStyle = '#22C55E';
+      x.fillRect(b2x, baseLineY - hP1, colW, hP1);
+      x.strokeRect(b2x, baseLineY - hP1, colW, hP1);
+      x.fillStyle = 'rgba(245,158,11,0.35)';
+      x.strokeStyle = '#F59E0B';
+      x.fillRect(b2x, baseLineY - hP1 - hP2, colW, hP2);
+      x.strokeRect(b2x, baseLineY - hP1 - hP2, colW, hP2);
+    } else {
+      x.fillStyle = 'rgba(52,216,139,0.32)';
+      x.strokeStyle = '#34D88B';
+      x.fillRect(b2x, baseLineY - hTrue, colW, hTrue);
+      x.strokeRect(b2x, baseLineY - hTrue, colW, hTrue);
+    }
+    CK.txt(x, '✅ ' + fmt(trueVal, 3), b2x + colW * 0.5, baseLineY - hTrue - 12, '#34D88B', '11px JetBrains Mono,monospace');
+    CK.txt(x, isSin ? 'sin(A + B)' : 'cos(A + B)', b2x + colW * 0.5, baseLineY + 16, '#34D88B', '10px JetBrains Mono,monospace');
+    CK.txt(x, '(True Value)', b2x + colW * 0.5, baseLineY + 30, '#34D88B', '9px Inter,sans-serif');
+
+    const headerStr = isSin
+      ? `sin(${angA}° + ${angB}°) = sin ${sumDeg}° = sin ${angA}° cos ${angB}° + cos ${angA}° sin ${angB}° = ${fmt(trueVal, 4)}`
+      : `cos(${angA}° + ${angB}°) = cos ${sumDeg}° = cos ${angA}° cos ${angB}° − sin ${angA}° sin ${angB}° = ${fmt(trueVal, 4)}`;
+    CK.txt(x, headerStr, w * 0.5, 22, '#BAE6FD', '12px JetBrains Mono,monospace');
+  }
+
+  onShow['v10'] = draw;
+}
+
+/* ══════════════════════════════════════════════════
+   MODULE 11 · Trigo:AI — Groq Vision Math Doubt Solver
+══════════════════════════════════════════════════ */
+function initM11() {
+  const root = document.getElementById('b11');
+  const shell = UI.el('div', 'ai-shell', root);
+
+  // Top configuration bar
+  const topBar = UI.el('div', 'ai-top', shell);
+  const leftGrp = UI.el('div', 'ai-top-grp', topBar);
+  const rightGrp = UI.el('div', 'ai-top-grp', topBar);
+
+  UI.el('span', 'cl', leftGrp, '🔑 Groq API Key:');
+  const keyIn = UI.el('input', 'ai-in', leftGrp);
+  keyIn.type = 'password';
+  keyIn.placeholder = 'gsk_... (paste Groq key)';
+  keyIn.style.width = '210px';
+  const savedKey = localStorage.getItem('trigo_groq_key') || '';
+  keyIn.value = savedKey;
+
+  const showKeyBtn = UI.btn(leftGrp, '👁', () => {
+    keyIn.type = keyIn.type === 'password' ? 'text' : 'password';
+  });
+  showKeyBtn.title = 'Show / Hide API Key';
+
+  const statusPill = UI.el('span', 'ai-status ' + (savedKey ? '' : 'demo'), leftGrp,
+    savedKey ? '● Groq Vision Ready' : '● Demo Mode (Add Key for Live AI)');
+
+  keyIn.addEventListener('input', () => {
+    const val = keyIn.value.trim();
+    localStorage.setItem('trigo_groq_key', val);
+    if (val) {
+      statusPill.className = 'ai-status';
+      statusPill.textContent = '● Groq Vision Ready';
+    } else {
+      statusPill.className = 'ai-status demo';
+      statusPill.textContent = '● Demo Mode (Add Key for Live AI)';
+    }
+  });
+
+  UI.el('span', 'cl', rightGrp, 'Vision Model:');
+  const modelSel = UI.el('select', 'ai-sel', rightGrp);
+  [
+    { v: 'meta-llama/llama-4-scout-17b-16e-instruct', t: 'Llama 4 Scout 17B Vision (Fast · No Thinking)' },
+    { v: 'meta-llama/llama-4-maverick-17b-128e-instruct', t: 'Llama 4 Maverick 17B Vision (Deep · No Thinking)' }
+  ].forEach(m => {
+    const o = UI.el('option', '', modelSel, m.t);
+    o.value = m.v;
+  });
+
+  const clearBtn = UI.btn(rightGrp, '🗑 Clear', () => {
+    chatLog.innerHTML = '';
+    chatHistory.length = 0;
+    addBotMsg(welcomeMd);
+  });
+
+  // Starter Prompt Chips
+  const chipsBar = UI.el('div', 'ai-chips', shell);
+  const starters = [
+    '☀️ How to solve Sun & Shadow problems (tan θ = h/s)?',
+    '📐 Explain why sin(A+B) ≠ sin A + sin B simply',
+    '🧭 Easy trick to remember ASTC quadrants',
+    '📏 What is 1 Radian (l = rθ) in simple words?',
+    '✨ Prove sec²θ − tan²θ = 1 step-by-step'
+  ];
+  starters.forEach(s => {
+    const b = UI.el('button', 'pl', chipsBar, s);
+    b.onclick = () => {
+      ta.value = s;
+      sendMessage();
+    };
+  });
+
+  // Chat messages container
+  const chatLog = UI.el('div', 'ai-log', shell);
+
+  // Image Preview Bar (above footer)
+  const prevBar = UI.el('div', 'ai-prev-bar', shell);
+  const prevImg = UI.el('img', 'ai-prev-thumb', prevBar);
+  const prevInfo = UI.el('span', 'cl', prevBar, 'Photo attached & ready for Vision analysis');
+  const removeImgBtn = UI.btn(prevBar, '× Remove Photo', () => {
+    pendingImageDataUrl = null;
+    fileIn.value = '';
+    prevBar.classList.remove('act');
+  });
+
+  // Footer Input Bar
+  const foot = UI.el('div', 'ai-foot', shell);
+  const fileIn = document.createElement('input');
+  fileIn.type = 'file';
+  fileIn.accept = 'image/*';
+  fileIn.style.display = 'none';
+  shell.appendChild(fileIn);
+
+  const uploadBtn = UI.btn(foot, '📷 Photo', () => fileIn.click());
+  uploadBtn.title = 'Upload or paste a photo of a math problem';
+
+  const ta = UI.el('textarea', 'ai-ta', foot);
+  ta.rows = 1;
+  ta.placeholder = 'Ask any Class 10/11 Trigonometry doubt, paste a photo (Ctrl+V), or try *italic* and **bold**...';
+
+  const sendBtn = UI.btn(foot, 'Send ➤', () => sendMessage(), 'rb');
+
+  let pendingImageDataUrl = null;
+  const chatHistory = [];
+
+  // Rich Markdown & *text* / **bold** parser (safe around math expressions)
+  function formatMarkdown(raw) {
+    if (!raw) return '';
+    // Strip any <think>...</think> blocks completely so thinking never shows
+    let text = String(raw).replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+
+    // Escape HTML entities first
+    text = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // Extract fenced code blocks ```...```
+    const codeBlocks = [];
+    text = text.replace(/```(?:\w+)?\n?([\s\S]*?)```/g, (_, code) => {
+      const idx = codeBlocks.length;
+      codeBlocks.push(`<pre><code>${code.trim()}</code></pre>`);
+      return `@@CODEBLOCK_${idx}@@`;
+    });
+
+    // Extract inline code `...`
+    const inlineCodes = [];
+    text = text.replace(/`([^`\n]+)`/g, (_, code) => {
+      const idx = inlineCodes.length;
+      inlineCodes.push(`<code>${code}</code>`);
+      return `@@INLINECODE_${idx}@@`;
+    });
+
+    // Headings
+    text = text.replace(/^###\s+(.+)$/gm, '<h4>$1</h4>');
+    text = text.replace(/^##\s+(.+)$/gm, '<h3>$1</h3>');
+
+    // Bold **text**
+    text = text.replace(/\*\*([^\*\n]+?)\*\*/g, '<strong>$1</strong>');
+
+    // Italic *text* (only when * is adjacent to non-whitespace so 3 * 4 math stays untouched)
+    text = text.replace(/(^|[^\w\*])\*([^\s\*](?:[^\*]*?[^\s\*])?)\*(?=[^\w\*]|$)/g, '$1<em>$2</em>');
+
+    // Bullet lists
+    const lines = text.split('\n');
+    let inList = false;
+    const outLines = [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const bulletMatch = line.match(/^\s*[-•]\s+(.+)$/);
+      if (bulletMatch) {
+        if (!inList) { outLines.push('<ul>'); inList = true; }
+        outLines.push(`<li>${bulletMatch[1]}</li>`);
+      } else {
+        if (inList) { outLines.push('</ul>'); inList = false; }
+        outLines.push(line);
+      }
+    }
+    if (inList) outLines.push('</ul>');
+    text = outLines.join('\n');
+
+    // Paragraph / line breaks
+    text = text.replace(/\n/g, '<br>');
+    text = text.replace(/<\/ul><br>/g, '</ul>').replace(/<\/h3><br>/g, '</h3>').replace(/<\/h4><br>/g, '</h4>');
+
+    // Restore inline code and code blocks
+    text = text.replace(/@@INLINECODE_(\d+)@@/g, (_, i) => inlineCodes[+i]);
+    text = text.replace(/@@CODEBLOCK_(\d+)@@/g, (_, i) => codeBlocks[+i]);
+    return text;
+  }
+
+  function addBotMsg(mdText) {
+    const row = UI.el('div', 'ai-msg bot', chatLog);
+    UI.el('div', 'ai-av', row, 'AI');
+    const bub = UI.el('div', 'ai-bub', row, formatMarkdown(mdText));
+    chatLog.scrollTop = chatLog.scrollHeight;
+    return bub;
+  }
+
+  function addUserMsg(text, imgUrl) {
+    const row = UI.el('div', 'ai-msg usr', chatLog);
+    UI.el('div', 'ai-av', row, 'YOU');
+    const bub = UI.el('div', 'ai-bub', row);
+    if (imgUrl) {
+      const im = UI.el('img', 'chat-img', bub);
+      im.src = imgUrl;
+      im.alt = 'Uploaded math question';
+    }
+    if (text) {
+      const div = document.createElement('div');
+      div.innerHTML = formatMarkdown(text);
+      bub.appendChild(div);
+    }
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
+  // Compress uploaded/pasted image to Base64 JPEG
+  function handleImageFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 1024;
+        let w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) { h = M.round((h * maxDim) / w); w = maxDim; }
+          else { w = M.round((w * maxDim) / h); h = maxDim; }
+        }
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        pendingImageDataUrl = c.toDataURL('image/jpeg', 0.84);
+        prevImg.src = pendingImageDataUrl;
+        prevInfo.textContent = `Photo attached (${ file.name || 'clipboard.jpg' })`;
+        prevBar.classList.add('act');
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  fileIn.addEventListener('change', () => {
+    if (fileIn.files && fileIn.files[0]) handleImageFile(fileIn.files[0]);
+  });
+
+  // Clipboard paste image support
+  shell.addEventListener('paste', e => {
+    if (!e.clipboardData || !e.clipboardData.items) return;
+    for (const item of e.clipboardData.items) {
+      if (item.type.startsWith('image/')) {
+        handleImageFile(item.getAsFile());
+        break;
+      }
+    }
+  });
+
+  // Built-in smart responses when no API key is entered yet
+  function getBuiltInResponse(q, hasImg) {
+    const s = q.toLowerCase();
+    if (hasImg) {
+      return `### 📷 Photo Detected (Demo Mode)
+I can see you attached a photo! To analyze your handwritten or textbook image live with **Llama 4 Vision**, paste your free **Groq API Key** (\`gsk_...\`) in the top-left box.
+
+*Quick Tip for Photo Questions:*
+- Identify the **Right Triangle** and mark the given angle *θ*.
+- Label the **Opposite**, **Adjacent**, and **Hypotenuse** relative to *θ*.
+- Use **SOH-CAH-TOA** (\`sin θ = Opp/Hyp\`, \`cos θ = Adj/Hyp\`, \`tan θ = Opp/Adj\`).`;
+    }
+    if (s.includes('shadow') || s.includes('sun')) {
+      return `### ☀️ How to Solve Sun & Shadow Problems
+In Class 10 Heights & Distances, the object of height **h** and its ground shadow **s** form a right-angled triangle with the Sun's altitude angle *θ*:
+- Formula: **tan θ = Opposite / Adjacent = h / s**
+- Therefore: **s = h / tan θ**
+
+*Three Golden Cases for Exams:*
+- At **θ = 45°**: \`tan 45° = 1\` → *Shadow equals Height* (**s = h**).
+- At **θ = 30°**: \`tan 30° = 1/√3\` → *Shadow is longer* (**s = h√3**).
+- At **θ = 60°**: \`tan 60° = √3\` → *Shadow is shorter* (**s = h/√3**).`;
+    }
+    if (s.includes('a+b') || s.includes('compound')) {
+      return `### 📐 Why sin(A + B) ≠ sin A + sin B
+A very common mistake is treating \`sin\` like multiplication!
+- **Counterexample:** Let *A = 30°* and *B = 60°*.
+- True value: \`sin(30° + 60°) = sin 90° = 1\`.
+- Wrong sum: \`sin 30° + sin 60° = 0.5 + 0.866 = 1.366\` (impossible since *sin θ ≤ 1*!).
+- **Correct Identity:** **sin(A + B) = sin A cos B + cos A sin B**.`;
+    }
+    if (s.includes('astc') || s.includes('quadrant')) {
+      return `### 🧭 Easy Trick for ASTC Quadrants
+Remember the phrase: **"All Silver Tea Cups"** (*Add Sugar To Coffee*):
+- **Q1 (0°–90°): All** functions are positive (+).
+- **Q2 (90°–180°): Silver → sin & csc** are positive (+), since *y* is up (+).
+- **Q3 (180°–270°): Tea → tan & cot** are positive (+), since *(−y)/(−x) = +*.
+- **Q4 (270°–360°): Cups → cos & sec** are positive (+), since *x* is right (+).`;
+    }
+    if (s.includes('radian')) {
+      return `### 📏 What is 1 Radian (l = rθ)?
+Imagine taking the radius **r** of a circle like a flexible string and laying it along the curved edge:
+- When the curved **Arc Length l equals the Radius r** (*l = r*), the angle at the center is **1 Radian ≈ 57.3°**.
+- Since a full circle circumference is \`2πr\`, a full 360° turn is **2π radians**, and **180° = π radians**.`;
+    }
+    return `### ✨ Trigonometry Tutor Response
+Here is a quick breakdown for your query: *"${q}"*
+- **Pythagorean Identities:**
+  - \`sin²θ + cos²θ = 1\`
+  - \`1 + tan²θ = sec²θ  ⇒  sec²θ − tan²θ = 1\`
+  - \`1 + cot²θ = csc²θ  ⇒  csc²θ − cot²θ = 1\`
+- *Tip:* Paste your **Groq API Key** (\`gsk_...\`) in the top bar to unlock live **Llama 4 Vision** answers for any custom question or photo!`;
+  }
+
+  async function sendMessage() {
+    const text = ta.value.trim();
+    const imgUrl = pendingImageDataUrl;
+    if (!text && !imgUrl) return;
+
+    addUserMsg(text || '*(Uploaded math problem photo)*', imgUrl);
+    ta.value = '';
+    pendingImageDataUrl = null;
+    fileIn.value = '';
+    prevBar.classList.remove('act');
+
+    const botBub = addBotMsg('*Solving your trigonometry doubt...*');
+    const apiKey = keyIn.value.trim();
+
+    if (!apiKey) {
+      setTimeout(() => {
+        botBub.innerHTML = formatMarkdown(getBuiltInResponse(text, !!imgUrl));
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }, 320);
+      return;
+    }
+
+    // Build multimodal content for Groq Chat Completions
+    const userContent = [];
+    userContent.push({
+      type: 'text',
+      text: text || 'Please solve the trigonometry problem shown in this image step-by-step for a Class 10/11 student.'
+    });
+    if (imgUrl) {
+      userContent.push({
+        type: 'image_url',
+        image_url: { url: imgUrl }
+      });
+    }
+
+    chatHistory.push({ role: 'user', content: userContent });
+
+    try {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: modelSel.value,
+          messages: [
+            {
+              role: 'system',
+              content: 'You are Trigo:AI, a friendly, crystal-clear Class 10 and Class 11 Trigonometry tutor. Explain step-by-step using simple language, *italics*, **bold**, and clean equations. Never output <think> tags or internal reasoning chains.'
+            },
+            ...chatHistory.slice(-8)
+          ],
+          temperature: 0.3,
+          max_tokens: 1024
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error((data && data.error && data.error.message) || `HTTP ${res.status}`);
+      }
+      const reply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'No response received.';
+      chatHistory.push({ role: 'assistant', content: reply });
+      botBub.innerHTML = formatMarkdown(reply);
+    } catch (err) {
+      botBub.innerHTML = formatMarkdown(`**⚠️ Groq API Error:** *${err.message}*\n\nPlease check that your \`gsk_...\` API key is valid, or clear the key box to use built-in Demo Mode.`);
+    }
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  const welcomeMd = `### 👋 Welcome to **Trigo:AI** — Groq Vision Doubt Solver!
+I am configured for **Class 10 & Class 11 Trigonometry** with *zero thinking clutter* and full support for **photo uploads** and \`*italic*\` / \`**bold**\` formatting.
+
+- 📷 **Snap or Paste a Photo:** Click **📷 Photo** (or press \`Ctrl+V\`) to attach a picture of any textbook or handwritten question.
+- ⚡ **Instant Answers:** Click any starter chip above or type your doubt below!`;
+
+  addBotMsg(welcomeMd);
+}
+
+/* ══════════════════════════════════════════════════
+   BOOTSTRAP ALL MODULES & RESIZE HANDLER
+══════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  initM1(); initM2(); initM3(); initM4(); initM5();
+  initM6(); initM7(); initM8(); initM9(); initM10(); initM11();
+
+  window.addEventListener('resize', () => {
+    if (onShow[curView]) onShow[curView]();
+  });
 });
 </script>
 </body>
